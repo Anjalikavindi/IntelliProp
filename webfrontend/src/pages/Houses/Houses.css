@@ -1,0 +1,132 @@
+.page-content {
+  padding-top: 4rem;
+  padding-bottom: 15rem;
+  /* padding: 6rem 2rem 15rem; */
+  min-height: 100vh;
+}
+
+.houses-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+.houses-container .primaryText {
+  text-align: left;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  color: var(--dark-blue);
+}
+
+.houses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* two cards per row */
+  gap: 2rem;
+}
+
+.house-card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.house-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.house-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.house-details {
+  padding: 1rem 1.2rem;
+}
+
+.house-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.house-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--black);
+}
+
+.heart-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.heart-icon:hover {
+  color: red;
+}
+
+.house-info {
+  font-size: 0.95rem;
+  color: #666666;
+  margin-bottom: 0.5rem;
+}
+
+.house-time {
+  font-size: 0.85rem;
+  color: #666666;
+}
+
+.verified-tag {
+  color: var(--dark-blue);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.2rem;
+}
+
+.unverified-tag {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 0.2rem;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1.2rem;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+@media (max-width: 768px) {
+  .houses-grid {
+    grid-template-columns: 1fr; /* one per row on small screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .houses-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-section {
+    order: -1; /* show filters on top in mobile */
+  }
+}

@@ -1,0 +1,44 @@
+/* Step Icons */
+.ads-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  background: none;
+}
+
+.detail-icon {
+    width: 25px;
+    height: 25px;
+}
+/* Active step icon circle */
+.step.active span {
+  background: var(--dark-beige);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+/* Default step circle with image */
+.step span {
+  border: 2px solid var(--primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  padding: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.step:hover span {
+  transform: scale(1.08);
+}
+
+/* Style for the number-based step */
+.step:not(.active) span:not(:has(img)) {
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 1.1rem;
+}

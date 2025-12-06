@@ -1,0 +1,87 @@
+.page-content {
+  /* padding: 6rem 2rem 15rem; */
+  min-height: 100vh;
+}
+
+/* .lands-container {
+  max-width: 1200px;
+  margin: 0 auto;
+} */
+
+/* Layout */
+.lands-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+/* Grid */
+.lands-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.land-card {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.land-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.land-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.land-details {
+  padding: 1rem 1.2rem;
+}
+
+.land-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.land-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.land-info {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.land-time {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .lands-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-section {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .lands-grid {
+    grid-template-columns: 1fr;
+  }
+}

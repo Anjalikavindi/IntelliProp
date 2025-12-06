@@ -1,0 +1,169 @@
+.admin-sidebar {
+  width: 250px;
+  height: 97vh;
+  background: #67C090;
+  padding: 15px;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 10px;
+  margin: 10px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    transform: translateX(-120%);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Toggle Button for mobile */
+.sidebar-toggle-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle-btn {
+    display: block;
+    position: fixed;
+    top: 10px;
+    left: 27px;
+    /* background: #67C090; */
+    border: none;
+    padding: 10px 10px 5px 10px;
+    color: #67C090;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .admin-sidebar.open ~ .sidebar-toggle-btn,
+  .sidebar-toggle-btn.open {
+    color: white !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide user section */
+  .admin-user-section {
+    display: none !important;
+  }
+
+  /* Hide menu labels */
+  .admin-label {
+    display: none !important;
+  }
+
+  /* Center icons vertically for better mobile UI */
+  .admin-sidebar-menu li {
+    justify-content: center;     
+    align-items: center;         
+    height: 45px; 
+  }
+
+  .admin-sidebar-menu li .admin-icon {
+    margin-right: 0 !important;  
+    font-size: 22px;
+    display: flex;
+    align-items: center;         /* icon centered inside */
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Reduce sidebar width */
+  .admin-sidebar {
+    width: 75px;     /* icons only */
+    padding: 80px 15px;
+  }
+
+  /* Add open transition */
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* User Profile Section */
+.admin-user-section {
+  display: flex;
+  flex-direction: row;
+}
+
+.admin-user-section.vertical {
+  flex-direction: column;     /* Stack items vertically */
+  align-items: center;         /* Center everything */
+  text-align: center;
+  gap: 10px;
+  padding: 25px 10px;
+  background: #ffffff20;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.admin-user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff50;
+}
+
+.admin-greeting{
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0;
+  color: white;
+}
+
+.admin-user-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+.admin-sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-sidebar-menu li {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.admin-sidebar-menu li .admin-icon {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.admin-sidebar-menu li:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.admin-sidebar-menu li.active {
+  background: #DDF4E7;
+  box-shadow: 0px 3px 8px rgb(103, 192, 144, 0.4);
+}
+
+.admin-sidebar-menu li.active .admin-label,
+.admin-sidebar-menu li.active .admin-icon {
+  color: #67C090 !important;
+}

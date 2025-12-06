@@ -1,0 +1,124 @@
+/* Main Header Wrapper */
+.admin-header {
+  height: 70px;
+  background: transparent;
+  padding: 0 15px;
+  margin-left: 275px; /* matches sidebar width */
+  margin-right: 20px;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  width: calc(100% - 295px);
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+}
+
+.admin-header-logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Logo on the left */
+.admin-header-logo img {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+  .admin-header.sidebar-open {
+    margin-left: 90px !important;
+    width: calc(100% - 90px) !important;
+    height: 44px;
+  }
+
+  .admin-header.sidebar-closed {
+    margin-left: 80px !important;
+    width: calc(100% - 80px) !important;
+    height: 44px;
+  }
+
+  .admin-header-right {
+    display: none !important;
+  }
+
+  .admin-header {
+    justify-content: flex-end !important;
+    /* padding-right: 20px !important; */
+  }
+
+  /* Ensure logo stays centered vertically */
+  .admin-header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
+  }
+}
+
+/* Search Bar */
+.admin-header-search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  border: 2px solid #DDF4E7;
+  padding: 10px 15px;
+  border-radius: 12px;
+  margin-right: 10px;
+  width: 200px;
+  transition: 0.2s ease-in-out;
+}
+
+/* .admin-header-search:hover {
+  background: #e9ebee;
+} */
+
+.admin-search-icon {
+  color: #7a7a7a;
+}
+
+/* Search Input */
+.admin-header-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 15px;
+}
+
+/* Right icons section */
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Each icon box */
+.admin-header-icon-box {
+  width: 35px;
+  height: 35px;
+  /* background: #DDF4E7; */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.admin-header-icon-box svg:hover {
+  color: #67C090;
+}
+
+.admin-header-icon-box svg {
+  font-size: 22px;
+  color: #000000;
+}

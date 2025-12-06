@@ -1,0 +1,49 @@
+/* Outer wrapper fully transparent */
+.g-wrapper {
+  background-color: transparent !important;
+  position: relative;
+  margin-bottom: -10rem;
+  margin-top: -15.5rem;
+  z-index: 2;
+}
+
+.inner-container{
+    gap: 1.5rem;
+    background: var(--black);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 6px solid var(--black);
+    text-align: center;
+    margin-top: 5rem;
+    /* Center and elevate above footer */
+    position: relative;
+    z-index: 2;
+    /* Shadow */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.inner-container .primaryText{
+    color: white;
+    font-weight: 600;
+}
+.inner-container .secondaryText{
+    color: rgba(255, 255, 255, 0.8);
+}
+/* .inner-container .button {
+    background: var(--primary);
+    color: var(--black);
+    border: 2px solid white;
+    box-shadow: var(--shadow);
+    border-radius: 10px;
+} */
+
+/* Wrapper adjustment for overlap */
+.g-wrapper {
+  position: relative;
+  margin-bottom: -10rem; /* Pull up GetStarted by 50% overlap */
+  z-index: 2;
+}
+
+.getstrarted-btn{
+  font-size: 0.9rem;
+}

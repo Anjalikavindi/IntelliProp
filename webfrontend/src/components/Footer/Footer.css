@@ -1,0 +1,91 @@
+.f-wrapper{
+    background: white;
+    padding-top: 10rem; 
+    padding-bottom: 3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.f-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+.f-section {
+  flex: 1 1 200px;
+  gap: 1rem;
+}
+
+.f-section img {
+  margin-bottom: 1rem;
+}
+
+.f-links {
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.f-links span:hover {
+  color: var(--primary) !important;
+  transition: color 0.3s ease;
+}
+
+.f-socials {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.f-socials svg {
+  font-size: 1.85rem;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  background: var(--black);
+  padding: 0.5rem;
+  border-radius: 10%;
+}
+
+.f-socials svg:hover {
+  color: var(--primary);
+  transform: scale(1.2);
+}
+
+.f-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.f-contact-item .f-icon {
+  color: var(--black);
+  font-size: 1.2rem;
+}
+
+.f-section .primaryText {
+  font-weight: 600;
+  font-size: 1.1rem !important;
+  margin-bottom: 0.5rem;
+}
+
+.f-contact-item .secondaryText,
+.f-links .secondaryText,
+.f-section .secondaryText {
+  color: rgba(0, 0, 0, 0.7) !important;
+  font-size: 0.9rem;
+}
+@media (max-width: 768px) {
+    .f-container{
+        justify-content: center;
+    }
+    .f-container>div{
+        align-items: center!important;
+        text-align: center;
+    }
+    .f-socials {
+        justify-content: center;
+    }
+}
