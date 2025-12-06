@@ -1,0 +1,18 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Backups
+*.tmp
+*.temp
+
+# Ignore all node_modules everywhere
+**/node_modules/
+
+# Ignore all environment files everywhere
+**/*.env
+**/*.env.*
