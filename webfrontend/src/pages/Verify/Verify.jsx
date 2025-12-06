@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import GetStarted from "../../components/GetStarted/GetStarted";
 import Footer from "../../components/Footer/Footer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./Verify.css";
 import "../PostAds/PostAds.css";
@@ -12,6 +12,7 @@ const Verify = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   // Load user details from localStorage
   useEffect(() => {
@@ -55,6 +56,8 @@ const Verify = () => {
       inputLabel: "OTP",
       inputPlaceholder: "Enter the 6-digit OTP",
       showCancelButton: true,
+      confirmButtonColor: "#000000", 
+      cancelButtonColor: "#ab9272",
     }).then(async (result) => {
       if (result.isConfirmed) {
         const otp = result.value;
@@ -75,6 +78,8 @@ const Verify = () => {
             title: "Email Verified",
             text: "You can now proceed to post your ad.",
             confirmButtonColor: "#ab9272",
+          }).then(() => {
+            navigate("/postyourad"); // <-- Redirection to postyourad
           });
         } catch (err) {
           Swal.fire({

@@ -4,7 +4,7 @@ import path from "path";
 // Store images inside /public/ad_images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/ad_images/");
+    cb(null, "public/ad_images/"); //test
   },
   filename: (req, file, cb) => {
     const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);

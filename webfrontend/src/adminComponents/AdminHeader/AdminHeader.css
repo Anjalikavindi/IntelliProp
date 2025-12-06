@@ -17,6 +17,13 @@
   transition: all 0.3s ease-in-out;
 }
 
+.admin-header.scrolled-header {
+    background: rgba(255, 255, 255, 0.3); 
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
+}
+
 .admin-header-logo {
   display: flex;
   align-items: center;
@@ -67,13 +74,13 @@
 .admin-header-search {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
   background: transparent;
-  border: 2px solid #DDF4E7;
-  padding: 10px 15px;
-  border-radius: 12px;
+  border: 1px solid #007E6E;
+  padding: 10px 10px;
+  border-radius: 10px;
   margin-right: 10px;
-  width: 200px;
+  width: 180px;
   transition: 0.2s ease-in-out;
 }
 
@@ -91,7 +98,7 @@
   outline: none;
   background: transparent;
   width: 100%;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 /* Right icons section */
@@ -115,7 +122,7 @@
 }
 
 .admin-header-icon-box svg:hover {
-  color: #67C090;
+  color: #007E6E;
 }
 
 .admin-header-icon-box svg {

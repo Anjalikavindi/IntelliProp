@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import "./AdminDashboard.css";
-import Sidebar from "../../adminComponents/Sidebar/Sidebar";
-import AdminHeader from "../../adminComponents/AdminHeader/AdminHeader";
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -9,33 +7,58 @@ const AdminDashboard = () => {
   return (
     <div className="dashboard-wrapper">
 
-      {/* <Sidebar />
-      <AdminHeader /> */}
-
       <div className="admin-dashboard-content">
-        {/* <div className="cards-row">
-          <div className="card blue">
-            <h3>Bookings</h3>
-            <h1>281</h1>
-            <p>+55% than last week</p>
+        <div className="cards-row">
+          {/* Bookings Card */}
+          <div className="stats-card">
+            <div className="icon-container icon-bookings">
+              <img src="/icons/land.png" alt="Bookings Icon" className="card-icon" />
+            </div>
+            <div className="card-content">
+              <h3>Published Ads</h3>
+              <h1>281</h1>
+              <hr/>
+              <p className="growth-indicator">+55% than last week</p>
+            </div>
           </div>
 
-          <div className="card green">
-            <h3>Today's Users</h3>
-            <h1>2300</h1>
-            <p>+3% than last month</p>
+          {/* Today's Users Card */}
+          <div className="stats-card">
+            <div className="icon-container icon-users">
+              <img src="/icons/land.png" alt="Bookings Icon" className="card-icon" />
+            </div>
+            <div className="card-content">
+              <h3>Pending Ads</h3>
+              <h1>2,300</h1> 
+              <hr/>
+              <p className="growth-indicator">+3% than last month</p>
+            </div>
           </div>
 
-          <div className="card pink">
-            <h3>Revenue</h3>
-            <h1>34k</h1>
-            <p>+1% than yesterday</p>
+          {/* Revenue Card */}
+          <div className="stats-card">
+            <div className="icon-container icon-revenue">
+              <img src="/icons/land.png" alt="Bookings Icon" className="card-icon" />
+            </div>
+            <div className="card-content">
+              <h3>Total Users</h3>
+              <h1>34k</h1>
+              <hr/>
+              <p className="growth-indicator">+1% than yesterday</p>
+            </div>
           </div>
 
-          <div className="card red">
-            <h3>Followers</h3>
-            <h1>+91</h1>
-            <p>Just updated</p>
+          {/* Followers Card */}
+          <div className="stats-card">
+            <div className="icon-container icon-followers">
+              <img src="/icons/land.png" alt="Bookings Icon" className="card-icon" />
+            </div>
+            <div className="card-content">
+              <h3>Followers</h3>
+              <h1 className="followers-count">+91</h1>
+              <hr/>
+              <p className="last-updated">Just updated</p>
+            </div>
           </div>
         </div>
 
@@ -55,7 +78,7 @@ const AdminDashboard = () => {
             <h3>Orders Overview</h3>
             <p>24% this month</p>
           </div>
-        </div> */}
+        </div>
       </div>
 
     </div>
