@@ -23,6 +23,8 @@ import LandList from "./adminPages/LandList/LandList";
 import { Outlet, Navigate } from "react-router-dom";
 import ResidenciesList from "./adminPages/ResidenciesList/ResidenciesList";
 import AuctionList from "./adminPages/AuctionList/AuctionList";
+import UsersList from "./adminPages/UsersList/UsersList";
+import AdminProfile from "./adminPages/AdminProfile/AdminProfile";
 
 // Helper component to wrap all Admin Panel pages with the fixed layout
 const AdminLayout = ({ open, setOpen }) => (
@@ -74,6 +76,8 @@ function App() {
             <Route path="residencies-ads" element={<ResidenciesList/>}/> 
             <Route path="land-ads" element={<LandList />} /> 
             <Route path="land-auctions" element={<AuctionList/>}/>
+            <Route path="registered-users" element={<UsersList/>}/>
+            <Route path="admin-profile" element={<AdminProfile/>}/>
           </Route>
         </Routes>
       </div>

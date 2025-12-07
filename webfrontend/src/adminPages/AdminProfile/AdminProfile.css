@@ -1,0 +1,186 @@
+/* Inherited padding-top style */
+.admin-dashboard-content.padding-top {
+  padding-top: 130px;
+}
+
+.list-title {
+  font-size: 1.7rem;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+/* --- Profile Card Styling --- */
+
+.profile-card-container {
+  display: flex;
+  justify-content: center; /* Center the card horizontally */
+  padding: 20px 0;
+}
+
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 700px; /* Constrain card width */
+  padding: 30px;
+  text-align: center;
+}
+
+/* Header Section */
+.profile-header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.profile-avatar-icon {
+  font-size: 4rem;
+  color: #d7c097; /* Primary color */
+  margin-bottom: 10px;
+}
+
+/* Name and Status styles remain the same for this request */
+.profile-name-input {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px 10px;
+  width: 80%;
+  margin-bottom: 5px;
+}
+
+.profile-name-input:focus {
+  border-color: #007e6e;
+  outline: none;
+}
+
+.profile-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-verified {
+  background-color: #d4edda;
+  color: #679d63; /* Green */
+}
+
+.status-pending {
+  background-color: #f6f0d4;
+  color: #9f8e71; /* Amber/Yellow */
+}
+
+/* Details Section */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Gap between the two rows */
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+/* NEW: Styles for the two-column layout wrapper */
+.detail-row-group {
+  display: flex;
+  gap: 20px; /* Space between Email/Mobile, and Role/Date */
+  width: 100%;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px dashed #f0f0f0;
+  padding-bottom: 10px;
+  flex: 1; /* Allows both items in the row group to take equal space */
+}
+
+.read-only {
+  opacity: 0.9;
+}
+
+.detail-icon {
+  font-size: 1.2rem;
+  color: #d7c097;
+  margin-right: 15px;
+  min-width: 20px;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #777;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.detail-input {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+  padding: 5px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.detail-input:focus {
+  border-color: #007e6e;
+  outline: none;
+  background-color: #f9fff8;
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Actions Section */
+.profile-actions {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.profile-actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s, opacity 0.3s;
+  flex: 1;
+}
+
+.edit-btn {
+  background-color: #007e6e;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #005a4e;
+}
+
+.change-password-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.change-password-btn:hover {
+  background-color: #e0e0e0;
+}

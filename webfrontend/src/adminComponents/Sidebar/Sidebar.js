@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import TableViewIcon from "@mui/icons-material/TableView";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
+import LandscapeIcon from '@mui/icons-material/Landscape';
+import RealEstateAgentIcon from '@mui/icons-material/RealEstateAgent';
+import PaidIcon from '@mui/icons-material/Paid';
 import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
@@ -21,12 +21,12 @@ const Sidebar = ({ open, setOpen }) => {
   };
 
   const menuItems = [
-    { name: "Dashboard", icon: <DashboardIcon />, path: "/admin/dashboard" },
-    { name: "Residencies", icon: <CreditCardIcon />, path: "/admin/residencies-ads" },
-    { name: "Lands", icon: <TableViewIcon />, path: "/admin/land-ads" },
-    { name: "Auctions", icon: <NotificationsIcon />, path: "/admin/land-auctions" },
-    { name: "Registered Users", icon: <HowToRegIcon />, path: "/register" },
-    { name: "Profile", icon: <PersonIcon />, path: "/admin/profile" },
+    { name: "Dashboard", icon: <SpaceDashboardIcon />, path: "/admin/dashboard" },
+    { name: "Residencies", icon: <RealEstateAgentIcon />, path: "/admin/residencies-ads" },
+    { name: "Lands", icon: <LandscapeIcon />, path: "/admin/land-ads" },
+    { name: "Auctions", icon: <PaidIcon />, path: "/admin/land-auctions" },
+    { name: "Registered Users", icon: <HowToRegIcon />, path: "/admin/registered-users" },
+    { name: "Profile", icon: <PersonIcon />, path: "/admin/admin-profile" },
     { name: "Logout", icon: <LogoutIcon />, path: "/login" },
   ];
 
