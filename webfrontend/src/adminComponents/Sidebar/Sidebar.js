@@ -6,7 +6,7 @@ import TableViewIcon from "@mui/icons-material/TableView";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
-import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -17,17 +17,17 @@ const Sidebar = ({ open, setOpen }) => {
   
   const user = {
     name: "Anjalika Dikkumbura",
-    avatar: "https://i.pravatar.cc/150?img=47", 
+    avatar: "https://i.pravatar.cc/150?img=5", 
   };
 
   const menuItems = [
     { name: "Dashboard", icon: <DashboardIcon />, path: "/admin/dashboard" },
     { name: "Residencies", icon: <CreditCardIcon />, path: "/admin/residencies-ads" },
     { name: "Lands", icon: <TableViewIcon />, path: "/admin/land-ads" },
-    { name: "Notifications", icon: <NotificationsIcon />, path: "/admin/notifications" },
+    { name: "Auctions", icon: <NotificationsIcon />, path: "/admin/land-auctions" },
+    { name: "Registered Users", icon: <HowToRegIcon />, path: "/register" },
     { name: "Profile", icon: <PersonIcon />, path: "/admin/profile" },
-    { name: "Sign In", icon: <LoginIcon />, path: "/login" },
-    { name: "Sign Up", icon: <HowToRegIcon />, path: "/register" },
+    { name: "Logout", icon: <LogoutIcon />, path: "/login" },
   ];
 
   const handleMenuClick = (item) => {
