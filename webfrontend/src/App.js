@@ -15,9 +15,26 @@ import Profile from "./pages/Profile/Profile";
 import ProtectedVerifiedRoute from "./pages/ProtectedVerifiedRoute/ProtectedVerifiedRoute";
 
 //Admin Panel
-import AdminDashboard from "./adminPages/AdminDashboard/AdminDashboard";
 import Sidebar from "./adminComponents/Sidebar/Sidebar";
 import AdminHeader from "./adminComponents/AdminHeader/AdminHeader";
+import AdminDashboard from "./adminPages/AdminDashboard/AdminDashboard";
+import LandList from "./adminPages/LandList/LandList";
+
+import { Outlet, Navigate } from "react-router-dom";
+import ResidenciesList from "./adminPages/ResidenciesList/ResidenciesList";
+
+// Helper component to wrap all Admin Panel pages with the fixed layout
+const AdminLayout = ({ open, setOpen }) => (
+  <>
+    <Sidebar open={open} setOpen={setOpen} />
+    <AdminHeader sidebarOpen={open} setSidebarOpen={setOpen} />
+    <div className={`admin-content ${open ? "shift" : ""}`}>
+      {/* The Outlet renders the matched child route component (AdminDashboard or LandList) */}
+      <Outlet /> 
+    </div>
+  </>
+);
+
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -46,19 +63,16 @@ function App() {
           <Route path="/housedetails" element={<HouseDetail />} />
           <Route path="/landdetails" element={<LandDetails />} />
           {/* ------------------------- ADMIN PANEL ------------------------- */}
-          <Route
-            path="/admin"
-            element={
-              <>
-                <Sidebar open={open} setOpen={setOpen} />
-                <AdminHeader sidebarOpen={open} setSidebarOpen={setOpen}/>
+          <Route 
+            path="/admin" 
+            element={<AdminLayout open={open} setOpen={setOpen} />}
+          >            
+            <Route index element={<Navigate to="dashboard" replace />} /> 
 
-                <div className={`admin-content ${open ? "shift" : ""}`}>
-                  <AdminDashboard />
-                </div>
-              </>
-            }
-          />
+            <Route path="dashboard" element={<AdminDashboard />} />  
+            <Route path="land-ads" element={<LandList />} /> 
+            <Route path="residencies-ads" element={<ResidenciesList/>}/>         
+          </Route>
         </Routes>
       </div>
     </Router>

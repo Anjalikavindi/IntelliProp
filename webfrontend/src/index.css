@@ -279,3 +279,20 @@ a {
   cursor: pointer;
   transform: scale(0.9);
 }
+
+
+/*********************************************************************************
+Admin Panel
+*********************************************************************************/
+
+.dashboard-wrapper {
+  display: flex;
+  background-color: #ededed;
+}
+
+.admin-dashboard-content {
+  margin-left: 275px;
+  margin-right: 20px;
+  padding: 160px 0;
+  width: calc(100% - 295px);
+}

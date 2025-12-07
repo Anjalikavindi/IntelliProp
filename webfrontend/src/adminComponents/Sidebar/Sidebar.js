@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import TableViewIcon from "@mui/icons-material/TableView";
@@ -10,6 +11,7 @@ import HowToRegIcon from "@mui/icons-material/HowToReg";
 import MenuIcon from "@mui/icons-material/Menu";
 
 const Sidebar = ({ open, setOpen }) => {
+  const navigate = useNavigate();
   const [active, setActive] = useState("Dashboard");
 
   
@@ -19,14 +21,25 @@ const Sidebar = ({ open, setOpen }) => {
   };
 
   const menuItems = [
-    { name: "Dashboard", icon: <DashboardIcon /> },
-    { name: "Lands", icon: <TableViewIcon /> },
-    { name: "Residencies", icon: <CreditCardIcon /> },
-    { name: "Notifications", icon: <NotificationsIcon /> },
-    { name: "Profile", icon: <PersonIcon /> },
-    { name: "Sign In", icon: <LoginIcon /> },
-    { name: "Sign Up", icon: <HowToRegIcon /> },
+    { name: "Dashboard", icon: <DashboardIcon />, path: "/admin/dashboard" },
+    { name: "Residencies", icon: <CreditCardIcon />, path: "/admin/residencies-ads" },
+    { name: "Lands", icon: <TableViewIcon />, path: "/admin/land-ads" },
+    { name: "Notifications", icon: <NotificationsIcon />, path: "/admin/notifications" },
+    { name: "Profile", icon: <PersonIcon />, path: "/admin/profile" },
+    { name: "Sign In", icon: <LoginIcon />, path: "/login" },
+    { name: "Sign Up", icon: <HowToRegIcon />, path: "/register" },
   ];
+
+  const handleMenuClick = (item) => {
+    setActive(item.name);
+    
+    if (item.path) {
+      navigate(item.path);
+    }
+    if (setOpen) {
+        setOpen(false);
+    }
+  };
 
   return (
     <>
@@ -53,7 +66,7 @@ const Sidebar = ({ open, setOpen }) => {
           <li
             key={item.name}
             className={active === item.name ? "active" : ""}
-            onClick={() => setActive(item.name)}
+            onClick={() => handleMenuClick(item)}
           >
             <span className="admin-icon">{item.icon}</span>
             <span className="admin-label">{item.name}</span>
