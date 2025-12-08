@@ -40,14 +40,14 @@ const AdminProfile = () => {
             <div className="profile-details">
               <div className="detail-row-group">
                 <div className="detail-item">
-                  <FaEnvelope className="detail-icon" />
+                  <FaEnvelope className="admin-detail-icon" />
                   <div className="detail-content">
                     <span className="detail-label">Email Address</span>
                     <span className="detail-value">{user.email}</span>
                   </div>
                 </div>
                 <div className="detail-item">
-                  <FaPhone className="detail-icon" />
+                  <FaPhone className="admin-detail-icon" />
                   <div className="detail-content">
                     <span className="detail-label">Contact Number</span>
                     <span className="detail-value">{user.mobile}</span>
@@ -57,14 +57,14 @@ const AdminProfile = () => {
               {/* Row 2: Role and Member Since */}
               <div className="detail-row-group">
                 <div className="detail-item">
-                  <FaBriefcase className="detail-icon" />
+                  <FaBriefcase className="admin-detail-icon" />
                   <div className="detail-content">
                     <span className="detail-label">Role on Platform</span>
                     <span className="detail-value">{user.role}</span>
                   </div>
                 </div>
                 <div className="detail-item read-only">
-                  <FaCalendarAlt className="detail-icon" />
+                  <FaCalendarAlt className="admin-detail-icon" />
                   <div className="detail-content">
                     <span className="detail-label">Member Since</span>
                     <span className="detail-value">{user.createdAt}</span>

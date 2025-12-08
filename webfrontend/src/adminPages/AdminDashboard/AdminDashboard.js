@@ -80,7 +80,7 @@ const AdminDashboard = () => {
         <div className="charts-row">
           {/* Chart 1: Website Views (Bar Chart) - Updated to have 7 bars */}
           <div className="chart-card chart-bar-blue">
-            <div className="chart-visual blue-bg">
+            <div className="chart-visual green-bg">
               {/* Placeholder for Bar Chart Visualization */}
               <div className="bar-chart-placeholder">
                 <div className="bar-chart-y-axis">
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
           </div>
           {/* Chart 2: Daily Sales (Line Chart Green) */}
           <div className="chart-card chart-line-green">
-            <div className="chart-visual green-bg">
+            <div className="chart-visual brown-bg">
               {/* Placeholder for Green Line Chart Visualization */}
               <div className="line-chart-placeholder green-line">
                 <div className="line-chart-y-axis">

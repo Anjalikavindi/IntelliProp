@@ -129,11 +129,11 @@
 }
 
 /* Specific Chart Background Colors */
-.blue-bg {
+.green-bg {
   background: linear-gradient(140deg, #73AF6F 0%, #73AF6F 100%); /* Vibrant Blue */
 }
 
-.green-bg {
+.brown-bg {
   background: linear-gradient(140deg, #E7DEAF 0%, #E7DEAF 100%); /* Vibrant Green */
 }
 

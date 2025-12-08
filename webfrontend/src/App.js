@@ -15,6 +15,7 @@ import Profile from "./pages/Profile/Profile";
 import ProtectedVerifiedRoute from "./pages/ProtectedVerifiedRoute/ProtectedVerifiedRoute";
 
 //Admin Panel
+import AdminLogin from "./adminPages/AdminLogin/AdminLogin";
 import Sidebar from "./adminComponents/Sidebar/Sidebar";
 import AdminHeader from "./adminComponents/AdminHeader/AdminHeader";
 import AdminDashboard from "./adminPages/AdminDashboard/AdminDashboard";
@@ -25,6 +26,7 @@ import ResidenciesList from "./adminPages/ResidenciesList/ResidenciesList";
 import AuctionList from "./adminPages/AuctionList/AuctionList";
 import UsersList from "./adminPages/UsersList/UsersList";
 import AdminProfile from "./adminPages/AdminProfile/AdminProfile";
+import AdminRegister from "./adminPages/AdminRegister/AdminRegister";
 
 // Helper component to wrap all Admin Panel pages with the fixed layout
 const AdminLayout = ({ open, setOpen }) => (
@@ -38,6 +40,19 @@ const AdminLayout = ({ open, setOpen }) => (
   </>
 );
 
+const AdminProtectedRoute = ({ children }) => {
+
+  const isAdminAuthenticated = false; 
+  const adminLoginPath = "/admin/login";
+
+  if (!isAdminAuthenticated) {
+    // Redirect to the Admin Login page if not authenticated
+    return <Navigate to={adminLoginPath} replace />;
+  }
+  
+  // If authenticated, render the child routes (AdminLayout)
+  return children;
+};
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -66,13 +81,17 @@ function App() {
           <Route path="/housedetails" element={<HouseDetail />} />
           <Route path="/landdetails" element={<LandDetails />} />
           {/* ------------------------- ADMIN PANEL ------------------------- */}
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route 
             path="/admin" 
-            element={<AdminLayout open={open} setOpen={setOpen} />}
+            element={<AdminProtectedRoute>
+                {/* AdminLayout includes Sidebar and Header */}
+                <AdminLayout open={open} setOpen={setOpen} />
+              </AdminProtectedRoute>}
           >            
             <Route index element={<Navigate to="dashboard" replace />} /> 
-
-            <Route path="dashboard" element={<AdminDashboard />} />  
+            <Route path="dashboard" element={<AdminDashboard />} /> 
+            <Route path="admin-register" element={<AdminRegister/>}/>
             <Route path="residencies-ads" element={<ResidenciesList/>}/> 
             <Route path="land-ads" element={<LandList />} /> 
             <Route path="land-auctions" element={<AuctionList/>}/>
