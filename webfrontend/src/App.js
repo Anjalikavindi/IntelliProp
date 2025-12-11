@@ -42,7 +42,7 @@ const AdminLayout = ({ open, setOpen }) => (
 
 const AdminProtectedRoute = ({ children }) => {
 
-  const isAdminAuthenticated = false; 
+  const isAdminAuthenticated = localStorage.getItem("adminToken") ? true : false;
   const adminLoginPath = "/admin/login";
 
   if (!isAdminAuthenticated) {

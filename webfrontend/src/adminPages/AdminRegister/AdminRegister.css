@@ -1,0 +1,88 @@
+.admin-register-bg {
+  background: linear-gradient(135deg, #d7c097, #e7deaf);
+}
+
+.admin-abstract {
+  background-color: #73AF6F;
+}
+
+.admin-input-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.admin-input-row .admin-input-group.admin-row-field {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.background-join-text {
+  font-size: 1.8rem;
+  color: #333; 
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+
+.shape-1.register-shape {
+  background: radial-gradient(circle, #E7DEAF 0%, #D7C097 100%);
+}
+
+.shape-2.register-shape {
+  background: radial-gradient(circle, #E7DEAF 0%, #D7C097 100%);
+}
+
+.shape-3.register-shape {
+  background: radial-gradient(circle, #E7DEAF 0%, #D7C097 100%);
+}
+
+.shape-4.register-shape {
+  background: radial-gradient(circle, #E7DEAF 0%, #D7C097 100%);
+}
+
+.shape-5.register-shape {
+  background: radial-gradient(circle, #E7DEAF 0%, #D7C097 100%);
+}
+
+.background-slogan {
+  color: #333;
+}
+
+.admin-register-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 30px;
+  background-color: #005f52;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.admin-register-button:hover {
+  background-color: #D7C097;
+}
+
+.admin-register-button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 992px) {
+  .admin-input-row {
+    flex-direction: column;
+    margin-bottom: 0;
+    gap: 0;
+  }
+
+  .admin-register-button {
+    padding: 5px;
+  }
+
+  .admin-input-row .admin-input-group.admin-row-field {
+    margin-bottom: 10px;
+  }
+}

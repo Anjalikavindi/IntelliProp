@@ -26,6 +26,7 @@ const Sidebar = ({ open, setOpen }) => {
     { name: "Lands", icon: <LandscapeIcon />, path: "/admin/land-ads" },
     { name: "Auctions", icon: <PaidIcon />, path: "/admin/land-auctions" },
     { name: "Registered Users", icon: <HowToRegIcon />, path: "/admin/registered-users" },
+    { name: "Manage Admins", icon: <HowToRegIcon />, path: "/admin/manage-admins" },
     { name: "Profile", icon: <PersonIcon />, path: "/admin/admin-profile" },
     { name: "Logout", icon: <LogoutIcon />, path: "/login" },
   ];

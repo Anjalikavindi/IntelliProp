@@ -126,13 +126,14 @@
 }
 
 .admin-login-form input[type="text"],
-.admin-login-form input[type="password"] {
+.admin-login-form input[type="password"],
+.admin-login-form input[type="email"]{
   width: 100%;
   padding: 10px 0;
   border: none;
   border-bottom: 2px solid rgba(0, 0, 0, 0.2);
   background: transparent;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #333;
   transition: border-bottom-color 0.3s;
 }
@@ -140,6 +141,35 @@
 .admin-login-form input:focus {
   outline: none;
   border-bottom-color: #007e6e;
+}
+
+/* Apply same styles to dropdown */
+.admin-login-form select {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  background: transparent;
+  font-size: 0.9rem;
+  color: #333 !important;
+  transition: border-bottom-color 0.3s;
+}
+
+/* Focus effect same as input */
+.admin-login-form select:focus {
+  outline: none;
+  border-bottom-color: #007e6e;
+}
+
+.admin-login-form select option {
+  background-color: #fff;
+  color: #333;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.admin-login-form select option:hover {
+  background-color: #e6f9f6;
 }
 
 .admin-forgot-password {
