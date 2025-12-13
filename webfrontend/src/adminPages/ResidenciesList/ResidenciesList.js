@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   FaEye,
   FaEdit,
@@ -8,76 +9,106 @@ import {
   FaUpload,
   FaHome, // Icon for Bedrooms/Bathrooms/Floors (optional, replacing FaEdit)
 } from "react-icons/fa";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import "./ResidenciesList.css";
 
-const mockResidencyAds = [
-  {
-    id: 201,
-    thumbnail: "/r1.png",
-    title: "Luxury Apartment with Sea View",
-    city: "Colombo",
-    sellerName: "Amara Holdings",
-    landSize: "12.5 Perches",
-    area: "1500 sqft",
-    floors: 1,
-    bedrooms: 3,
-    bathrooms: 2,
-    price: "LKR 55M",
-    createdAt: "2024-11-01",
-    publishedStatus: "Published",
-  },
-  {
-    id: 202,
-    thumbnail: "/r2.png",
-    title: "Modern Townhouse near Kandy Lake",
-    city: "Kandy",
-    sellerName: "Bandara Real Estate",
-    landSize: "8 Perches",
-    area: "2200 sqft",
-    floors: 2,
-    bedrooms: 4,
-    bathrooms: 3,
-    price: "LKR 32M",
-    createdAt: "2024-11-05",
-    publishedStatus: "Pending",
-  },
-  {
-    id: 203,
-    thumbnail: "/r3.png",
-    title: "Spacious Villa in Galle Fort",
-    city: "Galle",
-    sellerName: "Chandra Developers",
-    landSize: "30 Perches",
-    area: "3500 sqft",
-    floors: 2,
-    bedrooms: 5,
-    bathrooms: 4,
-    price: "LKR 90M",
-    createdAt: "2024-11-10",
-    publishedStatus: "Removed",
-  },
-];
+const MySwal = withReactContent(Swal);
 
 const ResidenciesList = () => {
-  const [residencyAds, setResidencyAds] = useState(mockResidencyAds);
-  const [searchTerm, setSearchTerm] = useState(""); // Handler for the 'Approve/Publish' action (using FaUpload)
+  const [residencyAds, setResidencyAds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); 
 
-  const handleApproveAd = (id) => {
-    alert(
-      `Approving residency ad ID: ${id}. (Status change to Published simulated)`
-    );
-    setResidencyAds((prevAds) =>
-      prevAds.map((ad) =>
-        ad.id === id ? { ...ad, publishedStatus: "Published" } : ad
-      )
-    );
-  }; // Filter ads based on search term (title or city)
+  // Function to fetch data from the backend
+  const fetchResidencies = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("adminToken"); // Ensure you pass the token for protected routes
+      const response = await axios.get(
+        "http://localhost:5000/api/admin/ads/residencies",
+        { headers: { Authorization: `Bearer ${token}` } } // Assuming token-based authentication
+      );
+      setResidencyAds(response.data);
+    } catch (err) {
+      console.error("Error fetching residency ads:", err);
+      setError(
+        "Failed to load residency ads. Please check the server connection."
+      );
+      // If unauthorized, redirect to login
+      if (err.response && err.response.status === 401) {
+        window.location.href = "/admin/login";
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchResidencies();
+  }, []);
+
+  const handleApproveAd = async (id) => {
+    try {
+      // const token = localStorage.getItem('adminToken');
+      // await axios.put(`http://localhost:5000/api/admin/ads/publish/${id}`,
+      //     {},
+      //     { headers: { Authorization: `Bearer ${token}` } }
+      // );
+
+      MySwal.fire({
+        icon: "success",
+        title: "Published!",
+        text: `Residency ad ID: ${id} has been published.`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // Simulate state update
+      setResidencyAds((prevAds) =>
+        prevAds.map((ad) =>
+          ad.id === id ? { ...ad, publishedStatus: "Published" } : ad
+        )
+      );
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Publish Failed",
+        text:
+          error.response?.data?.message || `Failed to publish ad ID: ${id}.`,
+      });
+    }
+  };
+
+  // Filter ads based on search term (title or city)
   const filteredAds = residencyAds.filter(
     (ad) =>
       ad.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ad.city.toLowerCase().includes(searchTerm.toLowerCase())
+      ad.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ad.sellerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="dashboard-wrapper">
+        <div className="admin-dashboard-content padding-top">
+          <p>Loading residency advertisements...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-wrapper">
+        <div className="admin-dashboard-content padding-top">
+          <p className="error-message">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-wrapper">
@@ -86,7 +117,7 @@ const ResidenciesList = () => {
         <div className="list-actions-bar">
           <input
             type="text"
-            placeholder="Search by Title or City..."
+            placeholder="Search by Title, City, or Seller..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="list-search-input"
@@ -98,11 +129,15 @@ const ResidenciesList = () => {
           <table className="residency-ads-table">
             <thead>
               <tr>
-                <th>ID</th> <th>Thumbnail</th>
+                <th>ID</th> 
+                <th>Thumbnail</th>
                 <th>Title & City</th>
-                <th>Seller Name</th> <th>Size & Area</th>
-                <th>Beds & Baths</th> <th>Price</th>
-                <th>Created At</th><th>Published</th>
+                <th>Seller Name</th> 
+                <th>Size & Area</th>
+                <th>Beds & Baths</th> 
+                <th>Price</th>
+                <th>Created At</th>
+                <th>Published</th>
                 <th>Actions</th>
               </tr>
             </thead>

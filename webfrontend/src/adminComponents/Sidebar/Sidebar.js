@@ -28,7 +28,7 @@ const Sidebar = ({ open, setOpen }) => {
     { name: "Registered Users", icon: <HowToRegIcon />, path: "/admin/registered-users" },
     { name: "Manage Admins", icon: <HowToRegIcon />, path: "/admin/manage-admins" },
     { name: "Profile", icon: <PersonIcon />, path: "/admin/admin-profile" },
-    { name: "Logout", icon: <LogoutIcon />, path: "/login" },
+    { name: "Logout", icon: <LogoutIcon />, path: "/admin/login" },
   ];
 
   const handleMenuClick = (item) => {
@@ -57,7 +57,7 @@ const Sidebar = ({ open, setOpen }) => {
           className="admin-user-avatar"
         />
         <div>
-          <h7 className="admin-greeting">Hello,</h7>
+          <h6 className="admin-greeting">Hello,</h6>
           <h3 className="admin-user-name">{user.name}</h3>
         </div>
       </div>

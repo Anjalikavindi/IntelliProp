@@ -27,6 +27,7 @@ import AuctionList from "./adminPages/AuctionList/AuctionList";
 import UsersList from "./adminPages/UsersList/UsersList";
 import AdminProfile from "./adminPages/AdminProfile/AdminProfile";
 import AdminRegister from "./adminPages/AdminRegister/AdminRegister";
+import ManageEmployees from "./adminPages/ManageEmployees/ManageEmployees";
 
 // Helper component to wrap all Admin Panel pages with the fixed layout
 const AdminLayout = ({ open, setOpen }) => (
@@ -97,6 +98,7 @@ function App() {
             <Route path="land-auctions" element={<AuctionList/>}/>
             <Route path="registered-users" element={<UsersList/>}/>
             <Route path="admin-profile" element={<AdminProfile/>}/>
+            <Route path="manage-admins" element={<ManageEmployees/>}/>
           </Route>
         </Routes>
       </div>
