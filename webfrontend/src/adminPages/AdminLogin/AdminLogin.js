@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { resetActivityTimer } from "../../utils/authUtils";
 import withReactContent from "sweetalert2-react-content";
 import "./AdminLogin.css";
 
@@ -48,6 +49,9 @@ const AdminLogin = () => {
       // Store token (e.g., in localStorage)
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("adminUser", JSON.stringify(res.data.admin));
+
+      //Set initial activity time on successful login
+      resetActivityTimer();
 
       // 2. Successful submission: Display success SweetAlert and redirect
       MySwal.fire({

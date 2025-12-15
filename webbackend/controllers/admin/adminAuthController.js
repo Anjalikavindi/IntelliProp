@@ -56,12 +56,12 @@ export const registerAdmin = async (req, res) => {
         }
 
         // OPTIONAL: Issue JWT token after registration
-        const adminId = result.insertId;
-        const token = jwt.sign(
-          { id: adminId, role: "admin" },
-          process.env.JWT_SECRET || "admin_secret_key",
-          { expiresIn: "7d" }
-        );
+        // const adminId = result.insertId;
+        // const token = jwt.sign(
+        //   { id: adminId, role: "admin" },
+        //   process.env.JWT_SECRET || "admin_secret_key",
+        //   { expiresIn: "7d" }
+        // );
 
         // Success response for the frontend (AdminRegister.js)
         return res.status(201).json({

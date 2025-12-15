@@ -29,6 +29,8 @@ import AdminProfile from "./adminPages/AdminProfile/AdminProfile";
 import AdminRegister from "./adminPages/AdminRegister/AdminRegister";
 import ManageEmployees from "./adminPages/ManageEmployees/ManageEmployees";
 
+import SessionManager from "./adminComponents/SessionManager/SessionManager";
+
 // Helper component to wrap all Admin Panel pages with the fixed layout
 const AdminLayout = ({ open, setOpen }) => (
   <>
@@ -83,16 +85,18 @@ function App() {
           <Route path="/landdetails" element={<LandDetails />} />
           {/* ------------------------- ADMIN PANEL ------------------------- */}
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/admin-register" element={<AdminRegister/>}/>
           <Route 
             path="/admin" 
             element={<AdminProtectedRoute>
                 {/* AdminLayout includes Sidebar and Header */}
+                <SessionManager>
                 <AdminLayout open={open} setOpen={setOpen} />
+                </SessionManager>
               </AdminProtectedRoute>}
           >            
             <Route index element={<Navigate to="dashboard" replace />} /> 
             <Route path="dashboard" element={<AdminDashboard />} /> 
-            <Route path="admin-register" element={<AdminRegister/>}/>
             <Route path="residencies-ads" element={<ResidenciesList/>}/> 
             <Route path="land-ads" element={<LandList />} /> 
             <Route path="land-auctions" element={<AuctionList/>}/>

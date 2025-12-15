@@ -7,7 +7,6 @@ import {
   FaToggleOff,
   FaTrash,
   FaUpload,
-  FaHome, // Icon for Bedrooms/Bathrooms/Floors (optional, replacing FaEdit)
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -19,7 +18,12 @@ const ResidenciesList = () => {
   const [residencyAds, setResidencyAds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  //View Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAd, setSelectedAd] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Function to fetch data from the backend
   const fetchResidencies = async () => {
@@ -50,7 +54,9 @@ const ResidenciesList = () => {
     fetchResidencies();
   }, []);
 
-  const handleApproveAd = async (id) => {
+  const handleApproveAd = async (adData) => {
+    const adIdToUse = adData.adId;
+    const houseIdToDisplay = adData.id;
     try {
       // const token = localStorage.getItem('adminToken');
       // await axios.put(`http://localhost:5000/api/admin/ads/publish/${id}`,
@@ -61,7 +67,7 @@ const ResidenciesList = () => {
       MySwal.fire({
         icon: "success",
         title: "Published!",
-        text: `Residency ad ID: ${id} has been published.`,
+        text: `Residency ad ID: ${houseIdToDisplay} has been published.`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -69,7 +75,9 @@ const ResidenciesList = () => {
       // Simulate state update
       setResidencyAds((prevAds) =>
         prevAds.map((ad) =>
-          ad.id === id ? { ...ad, publishedStatus: "Published" } : ad
+          ad.id === houseIdToDisplay
+            ? { ...ad, publishedStatus: "Published" }
+            : ad
         )
       );
     } catch (error) {
@@ -77,9 +85,35 @@ const ResidenciesList = () => {
         icon: "error",
         title: "Publish Failed",
         text:
-          error.response?.data?.message || `Failed to publish ad ID: ${id}.`,
+          error.response?.data?.message ||
+          `Failed to publish ad ID: ${houseIdToDisplay}.`,
       });
     }
+  };
+
+  const handleViewAd = (ad) => {
+    setSelectedAd(ad);
+    setCurrentImageIndex(0);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedAd(null);
+    setCurrentImageIndex(0);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex + 1) % selectedAd.images.length
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) =>
+        (prevIndex - 1 + selectedAd.images.length) % selectedAd.images.length
+    );
   };
 
   // Filter ads based on search term (title or city)
@@ -129,12 +163,12 @@ const ResidenciesList = () => {
           <table className="residency-ads-table">
             <thead>
               <tr>
-                <th>ID</th> 
+                <th>ID</th>
                 <th>Thumbnail</th>
                 <th>Title & City</th>
-                <th>Seller Name</th> 
+                <th>Seller Name</th>
                 <th>Size & Area</th>
-                <th>Beds & Baths</th> 
+                <th>Beds & Baths</th>
                 <th>Price</th>
                 <th>Created At</th>
                 <th>Published</th>
@@ -191,13 +225,14 @@ const ResidenciesList = () => {
                       <button
                         className="action-btn view-btn"
                         title="View Details"
+                        onClick={() => handleViewAd(ad)}
                       >
                         <FaEye />
                       </button>
                       <button
                         className="action-btn publish-btn"
                         title="Approve & Publish Ad"
-                        onClick={() => handleApproveAd(ad.id)}
+                        onClick={() => handleApproveAd(ad)}
                       >
                         <FaUpload />
                       </button>
@@ -224,6 +259,123 @@ const ResidenciesList = () => {
           {/* <button disabled>Previous</button><span>Page 1 of 5</span><button>Next</button> */}
         </div>
       </div>
+
+      {/* --- Modal Component Render --- */}
+      {isModalOpen && selectedAd && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="residency-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={closeModal}>
+              &times;
+            </button>
+            <h3 className="modal-title">{selectedAd.title}</h3>
+
+            <div className="modal-content-grid">
+              {/* --- IMAGE GALLERY SECTION --- */}
+              <div className="modal-image-section">
+                <div className="image-gallery-container">
+                  <img
+                    src={
+                      selectedAd.images[currentImageIndex]?.path ||
+                      "/default-house.png"
+                    }
+                    alt={`Image ${currentImageIndex + 1} of ${
+                      selectedAd.title
+                    }`}
+                    className="modal-main-image"
+                  />
+                  {selectedAd.images.length > 1 && (
+                    <>
+                      <button
+                        className="gallery-nav-btn prev-btn"
+                        onClick={prevImage}
+                      >
+                        &lt;
+                      </button>
+                      <button
+                        className="gallery-nav-btn next-btn"
+                        onClick={nextImage}
+                      >
+                        &gt;
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div className="modal-image-counter">
+                  {currentImageIndex + 1} / {selectedAd.images.length}
+                </div>
+                <p
+                  className={`modal-status status-${selectedAd.publishedStatus.toLowerCase()}`}
+                >
+                  Status: {selectedAd.publishedStatus}
+                </p>
+              </div>
+
+              {/* --- DETAILS SECTION --- */}
+              <div className="modal-details-section">
+                <h4 className="detail-header">General Information</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <strong>Property ID:</strong> <span>{selectedAd.id}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>City:</strong> <span>{selectedAd.city}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Seller:</strong>{" "}
+                    <span>{selectedAd.sellerName}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Created:</strong>{" "}
+                    <span>{selectedAd.createdAt}</span>
+                  </div>
+                </div>
+
+                <h4 className="detail-header">Description</h4>
+                <p className="ad-description-text">
+                  {selectedAd.description || "No description provided."}
+                </p>
+
+                <h4 className="detail-header">Pricing & Specs</h4>
+                <div className="detail-grid">
+                  <div className="detail-item">
+                    <strong>Price:</strong> <span>{selectedAd.price}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Land Size:</strong>{" "}
+                    <span>{selectedAd.landSize}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Area:</strong> <span>{selectedAd.area}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Floors:</strong> <span>{selectedAd.floors}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Bedrooms:</strong>{" "}
+                    <span>{selectedAd.bedrooms}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Bathrooms:</strong>{" "}
+                    <span>{selectedAd.bathrooms}</span>
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button
+                    className="add-new-btn"
+                    onClick={() => handleApproveAd(selectedAd)}
+                  >
+                    {selectedAd.publishedStatus === "Published"
+                      ? "Re-Approve"
+                      : "Publish Ad"}
+                  </button>
+                  <button className="button">Delete Ad</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
