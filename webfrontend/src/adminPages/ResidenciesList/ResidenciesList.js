@@ -57,12 +57,32 @@ const ResidenciesList = () => {
   const handleApproveAd = async (adData) => {
     const adIdToUse = adData.adId;
     const houseIdToDisplay = adData.id;
+
+    //Confirmation SweetAlert
+    const result = await MySwal.fire({
+      title: "Are you sure?",
+      text: `Do you want to publish Residency Ad ID: ${houseIdToDisplay}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#007e6e",
+      cancelButtonColor: "#E7DEAF",
+      confirmButtonText: "Yes, publish it!",
+    });
+
+    if (!result.isConfirmed) {
+      return; // Stop if the admin cancels
+    }
+
     try {
-      // const token = localStorage.getItem('adminToken');
-      // await axios.put(`http://localhost:5000/api/admin/ads/publish/${id}`,
-      //     {},
-      //     { headers: { Authorization: `Bearer ${token}` } }
-      // );
+      const token = localStorage.getItem("adminToken");
+
+      //Call the new backend endpoint to publish/update status
+      await axios.put(
+        // Make sure the path is correct
+        `http://localhost:5000/api/admin/ads/publish/${adIdToUse}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       MySwal.fire({
         icon: "success",
@@ -80,6 +100,9 @@ const ResidenciesList = () => {
             : ad
         )
       );
+      if (isModalOpen) {
+        closeModal();
+      }
     } catch (error) {
       MySwal.fire({
         icon: "error",
@@ -87,6 +110,67 @@ const ResidenciesList = () => {
         text:
           error.response?.data?.message ||
           `Failed to publish ad ID: ${houseIdToDisplay}.`,
+      });
+    }
+  };
+
+  // --- NEW FUNCTION: handleRejectAd ---
+  const handleRejectAd = async (adData) => {
+    const adIdToUse = adData.adId;
+    const houseIdToDisplay = adData.id;
+
+    // Optional: Add logging
+    console.log("Rejecting Ad ID (Internal):", adIdToUse);
+    console.log("Rejecting Ad ID (Display):", houseIdToDisplay); //Confirmation SweetAlert
+
+    const result = await MySwal.fire({
+      title: "Are you sure?",
+      text: `Do you want to REJECT Residency Ad ID: ${houseIdToDisplay}? This will hide the ad.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545", // Red color for danger/rejection
+      cancelButtonColor: "#E7DEAF",
+      confirmButtonText: "Yes, reject it!",
+    });
+
+    if (!result.isConfirmed) {
+      return; // Stop if the admin cancels
+    }
+
+    try {
+      const token = localStorage.getItem("adminToken"); // Call the new backend endpoint to reject/update status
+
+      await axios.put(
+        `http://localhost:5000/api/admin/ads/reject/${adIdToUse}`, // <<< NEW ENDPOINT
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      MySwal.fire({
+        icon: "success",
+        title: "Rejected!",
+        text: `Residency ad ID: ${houseIdToDisplay} has been rejected.`,
+        showConfirmButton: false,
+        timer: 1500,
+      }); // Simulate state update to show 'Rejected' status immediately
+
+      setResidencyAds((prevAds) =>
+        prevAds.map((ad) =>
+          ad.id === houseIdToDisplay
+            ? { ...ad, publishedStatus: "Rejected" }
+            : ad
+        )
+      );
+      if (isModalOpen) {
+        closeModal();
+      }
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Rejection Failed",
+        text:
+          error.response?.data?.message ||
+          `Failed to reject ad ID: ${houseIdToDisplay}.`,
       });
     }
   };
@@ -239,6 +323,7 @@ const ResidenciesList = () => {
                       <button
                         className="action-btn delete-btn"
                         title="Delete Ad"
+                        onClick={() => handleRejectAd(ad)}
                       >
                         <FaTrash />
                       </button>
@@ -369,7 +454,12 @@ const ResidenciesList = () => {
                       ? "Re-Approve"
                       : "Publish Ad"}
                   </button>
-                  <button className="button">Delete Ad</button>
+                  <button
+                    className="add-new-btn-1"
+                    onClick={() => handleRejectAd(selectedAd)}
+                  >
+                    Reject
+                  </button>
                 </div>
               </div>
             </div>

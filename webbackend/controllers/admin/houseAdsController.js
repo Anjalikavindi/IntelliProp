@@ -1,5 +1,7 @@
 import db from "../../config/db.js";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET;
 /**
  * @desc Fetch all House (Residency) ads with details for admin view.
  * @route GET /api/admin/ads/residencies
@@ -129,4 +131,152 @@ export const getHouseAdsList = async (req, res) => {
       message: "Error fetching residency advertisements from database.",
     });
   }
+};
+
+//Publish ads
+export const publishAd = async (req, res) => {
+  const { adId } = req.params;
+  let adminId;
+
+  // --- Start: Manual Token Check and Admin ID Extraction ---
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Not authorized, no token provided." });
+    }
+    
+    // Decode the token using the secret key
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    // Extract the admin ID (assuming your token payload includes { id: admin.id, ... })
+    adminId = decoded.id;
+
+    if (!adminId) {
+        return res.status(401).json({ message: "Admin ID missing in token payload." });
+    }
+
+  } catch (error) {
+    console.error("JWT verification failed:", error.message);
+    return res.status(401).json({ message: "Not authorized, invalid token." });
+  }
+  // --- End: Manual Token Check and Admin ID Extraction ---
+
+  if (!adId || isNaN(adId)) {
+    return res.status(400).json({ message: "Invalid Ad ID." });
+  }
+
+  const updateQuery = `
+        UPDATE ads
+        SET 
+            publish_status = 'Published',
+            status_updated_by_admin_id = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE 
+            ad_id = ? AND property_category = 'House';
+    `;
+
+  try {
+    // Execute the update query using the extracted adminId
+    const [result] = await db.promise().query(updateQuery, [adminId, adId]);
+
+    if (result.affectedRows === 0) {
+      // Check if the ad exists but is already Published
+      const checkStatusQuery = "SELECT publish_status FROM ads WHERE ad_id = ?";
+      const [statusResult] = await db.promise().query(checkStatusQuery, [adId]);
+      
+      if (statusResult.length > 0 && statusResult[0].publish_status === 'Published') {
+          return res.status(200).json({
+              message: `Ad ${adId} is already Published. Updated admin ID and timestamp.`,
+              status: "Published",
+          });
+      }
+
+      return res.status(404).json({
+        message:
+          "Ad not found or it's not a House property.",
+      });
+    }
+
+    res.status(200).json({
+      message: `Ad ${adId} published successfully.`,
+      status: "Published",
+    });
+  } catch (error) {
+    console.error("Database error publishing ad:", error);
+    res.status(500).json({ message: "Failed to update ad status in database." });
+  }
+};
+
+
+//Reject ads
+export const rejectAd = async (req, res) => { // <<< NEW FUNCTION
+    const { adId } = req.params;
+    let adminId;
+
+    // --- Start: Manual Token Check and Admin ID Extraction ---
+    try {
+        const token = req.headers.authorization?.split(" ")[1];
+
+        if (!token) {
+            return res.status(401).json({ message: "Not authorized, no token provided." });
+        }
+        
+        // Decode the token using the secret key
+        const decoded = jwt.verify(token, JWT_SECRET);
+        adminId = decoded.id;
+
+        if (!adminId) {
+            return res.status(401).json({ message: "Admin ID missing in token payload." });
+        }
+
+    } catch (error) {
+        console.error("JWT verification failed:", error.message);
+        return res.status(401).json({ message: "Not authorized, invalid token." });
+    }
+    // --- End: Manual Token Check and Admin ID Extraction ---
+
+    if (!adId || isNaN(adId)) {
+        return res.status(400).json({ message: "Invalid Ad ID." });
+    }
+
+    const updateQuery = `
+        UPDATE ads
+        SET 
+            publish_status = 'Rejected',  
+            status_updated_by_admin_id = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE 
+            ad_id = ? AND property_category = 'House';
+    `;
+
+    try {
+        // Execute the update query using the extracted adminId
+        const [result] = await db.promise().query(updateQuery, [adminId, adId]);
+
+        if (result.affectedRows === 0) {
+            // Check if the ad exists but is already Rejected
+            const checkStatusQuery = "SELECT publish_status FROM ads WHERE ad_id = ?";
+            const [statusResult] = await db.promise().query(checkStatusQuery, [adId]);
+            
+            if (statusResult.length > 0 && statusResult[0].publish_status === 'Rejected') {
+                return res.status(200).json({
+                    message: `Ad ${adId} is already Rejected. Updated admin ID and timestamp.`,
+                    status: "Rejected",
+                });
+            }
+
+            return res.status(404).json({
+                message: "Ad not found or it's not a House property.",
+            });
+        }
+
+        res.status(200).json({
+            message: `Ad ${adId} rejected successfully.`,
+            status: "Rejected",
+        });
+    } catch (error) {
+        console.error("Database error rejecting ad:", error);
+        res.status(500).json({ message: "Failed to update ad status in database." });
+    }
 };
