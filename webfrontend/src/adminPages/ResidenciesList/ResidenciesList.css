@@ -255,7 +255,7 @@
   padding: 30px;
   border-radius: 10px;
   width: 90%;
-  max-width: 850px; /* Increased max width for the grid */
+  max-width: 975px; /* Increased max width for the grid */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   max-height: 90vh;

@@ -18,6 +18,8 @@ export const getHouseAdsList = async (req, res) => {
             a.created_at AS createdAt,
             a.publish_status AS publishedStatus,
             u.name AS sellerName,
+            u.email AS sellerEmail,
+            u.mobile AS sellerMobile,
             hd.land_size AS landSize,
             hd.area_sqft AS area,
             hd.floors,
@@ -104,7 +106,8 @@ export const getHouseAdsList = async (req, res) => {
         city: ad.city,
         description: ad.description,
         sellerName: ad.sellerName,
-
+        sellerEmail: ad.sellerEmail,
+        sellerMobile: ad.sellerMobile,
         // Formatted values
         landSize: `${
           parsedLandSize !== null ? parsedLandSize.toFixed(2) : "N/A"
@@ -173,7 +176,7 @@ export const publishAd = async (req, res) => {
             status_updated_by_admin_id = ?,
             updated_at = CURRENT_TIMESTAMP
         WHERE 
-            ad_id = ? AND property_category = 'House';
+            ad_id = ?;
     `;
 
   try {
@@ -247,7 +250,7 @@ export const rejectAd = async (req, res) => { // <<< NEW FUNCTION
             status_updated_by_admin_id = ?,
             updated_at = CURRENT_TIMESTAMP
         WHERE 
-            ad_id = ? AND property_category = 'House';
+            ad_id = ?;
     `;
 
     try {

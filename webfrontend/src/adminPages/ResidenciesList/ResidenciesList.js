@@ -413,6 +413,14 @@ const ResidenciesList = () => {
                     <strong>Created:</strong>{" "}
                     <span>{selectedAd.createdAt}</span>
                   </div>
+                  <div className="detail-item">
+                    <strong>Email:</strong>{" "}
+                    <span>{selectedAd.sellerEmail}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Mobile:</strong>{" "}
+                    <span>+94 {selectedAd.sellerMobile}</span>
+                  </div>
                 </div>
 
                 <h4 className="detail-header">Description</h4>

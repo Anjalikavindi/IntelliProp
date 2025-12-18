@@ -8,7 +8,11 @@ import {
   FaTrash,
   FaUpload,
 } from "react-icons/fa";
-import "./LandList.css"; // Import the CSS file
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import "./LandList.css";
+
+const MySwal = withReactContent(Swal);
 
 const LandList = () => {
   const [landAds, setLandAds] = useState([]);
@@ -39,6 +43,94 @@ const LandList = () => {
   useEffect(() => {
     fetchLandAds();
   }, []);
+
+  // --- Approve Function ---
+  const handleApproveAd = async (adData) => {
+    const result = await MySwal.fire({
+      title: "Confirm Publication",
+      text: `Do you want to publish Land Ad ID: ${adData.id}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#007e6e",
+      cancelButtonColor: "#E7DEAF",
+      confirmButtonText: "Yes, publish it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.put(
+        `http://localhost:5000/api/admin/ads/publish/${adData.adId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      MySwal.fire({
+        icon: "success",
+        title: "Published!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setLandAds((prev) =>
+        prev.map((ad) =>
+          ad.adId === adData.adId ? { ...ad, publishedStatus: "Published" } : ad
+        )
+      );
+      if (isModalOpen) closeModal();
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: error.response?.data?.message || "Error",
+      });
+    }
+  };
+
+  // --- Reject Function ---
+  const handleRejectAd = async (adData) => {
+    const result = await MySwal.fire({
+      title: "Reject Advertisement?",
+      text: `This will hide Land Ad ID: ${adData.id}.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#E7DEAF",
+      confirmButtonText: "Yes, reject it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.put(
+        `http://localhost:5000/api/admin/ads/reject/${adData.adId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      MySwal.fire({
+        icon: "success",
+        title: "Rejected",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setLandAds((prev) =>
+        prev.map((ad) =>
+          ad.adId === adData.adId ? { ...ad, publishedStatus: "Rejected" } : ad
+        )
+      );
+      if (isModalOpen) closeModal();
+    } catch (error) {
+      MySwal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: error.response?.data?.message || "Error",
+      });
+    }
+  };
 
   const handleViewAd = (ad) => {
     setSelectedAd(ad);
@@ -190,12 +282,14 @@ const LandList = () => {
                       <button
                         className="action-btn publish-btn"
                         title="Approve & Publish Ad"
+                        onClick={() => handleApproveAd(ad)}
                       >
                         <FaUpload />
                       </button>
                       <button
                         className="action-btn delete-btn"
                         title="Delete Ad"
+                        onClick={() => handleRejectAd(ad)}
                       >
                         <FaTrash />
                       </button>
@@ -259,6 +353,13 @@ const LandList = () => {
                 <div className="modal-image-counter">
                   {currentImageIndex + 1} / {selectedAd.images.length}
                 </div>
+
+                <p
+                  className={`modal-status status-${selectedAd.publishedStatus.toLowerCase()}`}
+                  style={{ marginTop: "10px" }}
+                >
+                  Status: {selectedAd.publishedStatus}
+                </p>
               </div>
 
               <div className="modal-details-section">
@@ -285,6 +386,14 @@ const LandList = () => {
                     <strong>Seller:</strong>{" "}
                     <span>{selectedAd.sellerName}</span>
                   </div>
+                  <div className="detail-item">
+                    <strong>Email:</strong>{" "}
+                    <span>{selectedAd.sellerEmail}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Mobile:</strong>{" "}
+                    <span>+94 {selectedAd.sellerMobile}</span>
+                  </div>
                 </div>
 
                 <h4 className="detail-header">Description</h4>
@@ -293,8 +402,20 @@ const LandList = () => {
                 </p>
 
                 <div className="modal-actions">
-                  <button className="add-new-btn">Approve</button>
-                  <button className="add-new-btn-1">Reject</button>
+                  <button
+                    className="add-new-btn"
+                    onClick={() => handleApproveAd(selectedAd)}
+                  >
+                    {selectedAd.publishedStatus === "Published"
+                      ? "Re-Approve"
+                      : "Approve"}
+                  </button>
+                  <button
+                    className="add-new-btn-1"
+                    onClick={() => handleRejectAd(selectedAd)}
+                  >
+                    Reject
+                  </button>
                 </div>
               </div>
             </div>
