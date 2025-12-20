@@ -1,74 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaPhone, FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
 import "./AuctionList.css";
 
-const mockAuctionAds = [
-  {
-    id: 501,
-    adTitle: "Prime Residential Plot near City Center",
-    city: "Colombo",
-    startingPrice: "LKR 5M",
-    currentHighestBid: "LKR 5.5M",
-    highestBidder: "Alex Fernando",
-    highestBidderEmail: "alex@example.com", 
-    sellerName: "Kamal Perera", 
-    sellerEmail: "kamal@seller.com", 
-    auctionEndTime: "2025-12-10 14:00",
-    status: "Active",
-  },
-  {
-    id: 502,
-    adTitle: "Commercial Land facing Main Highway",
-    city: "Kandy",
-    startingPrice: "LKR 10M",
-    currentHighestBid: "LKR 10.1M",
-    highestBidder: "Bhanu Rajapakshe",
-    highestBidderEmail: "bhanu@example.com", 
-    sellerName: "Sunil Silva", 
-    sellerEmail: "sunil@seller.com", 
-    auctionEndTime: "2025-12-05 10:00",
-    status: "Completed",
-  },
-  {
-    id: 503,
-    adTitle: "Agricultural Farm Land with Water Access",
-    city: "Anuradhapura",
-    startingPrice: "LKR 2.5M",
-    currentHighestBid: "N/A",
-    highestBidder: "N/A",
-    highestBidderEmail: "N/A", 
-    sellerName: "Nimali Fernando", 
-    sellerEmail: "nimali@seller.com", 
-    auctionEndTime: "2025-12-20 18:00",
-    status: "Active",
-  },
-  {
-    id: 504,
-    adTitle: "Beachfront Tourist Zone Plot",
-    city: "Galle",
-    startingPrice: "LKR 25M",
-    currentHighestBid: "LKR 28M",
-    highestBidder: "Chandrika Silva",
-    highestBidderEmail: "chandrika@example.com", 
-    sellerName: "Priya Rajan", 
-    sellerEmail: "priya@seller.com", 
-    auctionEndTime: "2025-12-12 11:30",
-    status: "Active",
-  },
-];
-
 const AuctionList = () => {
-  const [auctionAds, setAuctionAds] = useState(mockAuctionAds);
+  const [auctionAds, setAuctionAds] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleCall = (id) => {
-    alert(`Simulating Call action for Auction ID: ${id}.`);
+  const fetchAuctions = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("adminToken");
+      const response = await axios.get(
+        "http://localhost:5000/api/admin/ads/auctions",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setAuctionAds(response.data);
+    } catch (err) {
+      console.error("Failed to fetch auctions", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm(`Are you sure you want to delete Auction ID: ${id}?`)) {
-      setAuctionAds((prevAds) => prevAds.filter((ad) => ad.id !== id));
+  useEffect(() => {
+    fetchAuctions();
+  }, []);
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will permanently remove the auction record.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem("adminToken");
+        await axios.delete(
+          `http://localhost:5000/api/admin/ads/auctions/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setAuctionAds((prev) => prev.filter((ad) => ad.id !== id));
+        Swal.fire("Deleted!", "Auction has been removed.", "success");
+      } catch (error) {
+        Swal.fire("Error", "Could not delete auction.", "error");
+      }
     }
+  };
+
+  const handleCall = (bidderMobile, bidderName) => {
+    if (!bidderMobile) {
+      Swal.fire(
+        "Not Available",
+        "This bidder has no contact number or no bids placed.",
+        "info"
+      );
+      return;
+    }
+    // This opens the phone dialer on mobile devices
+    window.location.href = `tel:${bidderMobile}`;
   };
 
   // Filter ads based on search term (ad title or city)
@@ -77,6 +77,8 @@ const AuctionList = () => {
       ad.adTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ad.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <div className="loader">Loading Auctions...</div>;
 
   return (
     <div className="dashboard-wrapper">
@@ -160,8 +162,8 @@ const AuctionList = () => {
                     <td data-label="Actions" className="td-actions">
                       <button
                         className="action-btn call-btn" // Changed class
-                        title="Call Highest Bidder"
-                        onClick={() => handleCall(ad.id)}
+                        title={`Call ${ad.highestBidder}`}
+                        onClick={() => handleCall(ad.bidderMobile, ad.highestBidder)}
                       >
                         <FaPhone />
                       </button>
