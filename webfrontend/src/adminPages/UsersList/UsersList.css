@@ -169,10 +169,10 @@
 }
 
 .verified-btn {
-  color: #679d63;
+  color: #d7c097;
 } /* Green for Verify */
 .unverify-btn {
-  color: #d7c097;
+  color: #679d63;
 } /* Gold/Amber for Unverify */
 .delete-btn {
   color: #dc3545;

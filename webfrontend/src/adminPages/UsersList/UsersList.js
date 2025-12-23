@@ -1,75 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaTrash, FaEnvelope, FaCity } from "react-icons/fa";
 import { MdOutlineSecurity } from "react-icons/md";
+import Swal from "sweetalert2";
 import "./UsersList.css";
 
-const mockUsers = [
-  {
-    id: 101,
-    name: "Janaka Perera",
-    email: "janaka.p@usermail.com",
-    mobile: "+94 77 123 4567",
-    city: "Colombo",
-    createdAt: "2024-10-15",
-    verifiedStatus: "Verified",
-  },
-  {
-    id: 102,
-    name: "Lalitha Mendis",
-    email: "lalitha.m@usermail.com",
-    mobile: "+94 71 987 6543",
-    city: "Kandy",
-    createdAt: "2024-10-20",
-    verifiedStatus: "Pending",
-  },
-  {
-    id: 103,
-    name: "Nishan Silva",
-    email: "nishan.s@usermail.com",
-    mobile: "+94 76 555 1111",
-    city: "Galle",
-    createdAt: "2024-11-01",
-    verifiedStatus: "Pending",
-  },
-  {
-    id: 104,
-    name: "Priya Fernando",
-    email: "priya.f@usermail.com",
-    mobile: "+94 77 222 3333",
-    city: "Jaffna",
-    createdAt: "2024-11-15",
-    verifiedStatus: "Verified",
-  },
-];
-
 const UsersList = () => {
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleVerifyToggle = (id) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => {
-        if (user.id === id) {
-          const newStatus =
-            user.verifiedStatus === "Verified" ? "Pending" : "Verified";
-          alert(`User ${user.name} status toggled to: ${newStatus}`);
-          return { ...user, verifiedStatus: newStatus };
-        }
-        return user;
-      })
-    );
+  // Fetch Users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/admin/users");
+      setUsers(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    const userToDelete = users.find((user) => user.id === id);
-    if (
-      window.confirm(
-        `Are you sure you want to delete user: ${userToDelete.name} (ID: ${id})?`
-      )
-    ) {
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleDelete = async (id, name) => {
+    const confirm = await Swal.fire({
+      title: `Delete ${name}?`,
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete"
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:5000/api/admin/users/${id}`);
+        setUsers(users.filter(user => user.id !== id));
+        Swal.fire("Deleted!", "User has been removed.", "success");
+      } catch (error) {
+        Swal.fire("Error", "Could not delete user.", "error");
+      }
     }
-  }; // Filter users based on search term (name, email, mobile, or city)
+  };
+
+  // const handleVerifyToggle = (id) => {
+  //   setUsers((prevUsers) =>
+  //     prevUsers.map((user) => {
+  //       if (user.id === id) {
+  //         const newStatus =
+  //           user.verifiedStatus === "Verified" ? "Pending" : "Verified";
+  //         alert(`User ${user.name} status toggled to: ${newStatus}`);
+  //         return { ...user, verifiedStatus: newStatus };
+  //       }
+  //       return user;
+  //     })
+  //   );
+  // };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -78,6 +68,8 @@ const UsersList = () => {
       user.mobile.includes(searchTerm) ||
       user.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <div className="loader">Loading Users...</div>;
 
   return (
     <div className="dashboard-wrapper">
@@ -97,7 +89,8 @@ const UsersList = () => {
           <table className="users-list-table">
             <thead>
               <tr>
-                <th>ID</th><th>Name</th>
+                <th>ID</th>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
                 <th>City</th>
@@ -143,17 +136,17 @@ const UsersList = () => {
                         }`}
                         title={
                           user.verifiedStatus === "Verified"
-                            ? "Unverify User"
-                            : "Verify User"
+                            ? "Verified User"
+                            : "Unverified User"
                         }
-                        onClick={() => handleVerifyToggle(user.id)}
+                        // onClick={() => handleVerifyToggle(user.id)}
                       >
                         <MdOutlineSecurity />
                       </button>
                       <button
                         className="action-btn delete-btn"
                         title="Delete User"
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => handleDelete(user.id, user.name)}
                       >
                         <FaTrash />
                       </button>

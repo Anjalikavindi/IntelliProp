@@ -8,6 +8,7 @@ import otpRoutes from "./routes/website/otpRoutes.js";
 import adRoutes from "./routes/website/adRoutes.js";
 import adminAuthRoutes from "./routes/admin/adminAuthRoutes.js";
 import adminAdsRoutes from "./routes/admin/adminAdsRoutes.js";
+import adminUserRoutes from "./routes/admin/UserRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +32,8 @@ app.use("/api/ads", adRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 //Ads
 app.use("/api/admin/ads", adminAdsRoutes);
+//Users
+app.use("/api/admin/users", adminUserRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
