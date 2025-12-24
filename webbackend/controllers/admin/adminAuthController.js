@@ -140,3 +140,64 @@ export const loginAdmin = async (req, res) => {
     });
   });
 };
+
+// Admin list
+export const getAdminsList = async (req, res) => {
+  const query = `
+    SELECT 
+      au.id, 
+      au.full_name AS name, 
+      au.username, 
+      au.email, 
+      ar.role_name AS role 
+    FROM admin_users au
+    JOIN admin_roles ar ON au.role_id = ar.id
+    ORDER BY au.id ASC
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching admins:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.status(200).json(results);
+  });
+};
+
+//Logged in admin
+export const getAdminProfile = async (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    SELECT 
+      au.id, 
+      au.full_name AS name, 
+      au.username, 
+      au.email, 
+      au.created_at,
+      ar.role_name AS role 
+    FROM admin_users au
+    JOIN admin_roles ar ON au.role_id = ar.id
+    WHERE au.id = ?
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Error fetching profile:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.status(200).json(results[0]);
+  });
+};
+
+//Delete admin
+export const deleteAdmin = async (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM admin_users WHERE id = ?", [id], (err, result) => {
+    if (err) return res.status(500).json({ message: "Error deleting admin" });
+    res.status(200).json({ message: "Admin removed successfully" });
+  });
+};

@@ -1,45 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaTrash, FaEnvelope, FaCity } from "react-icons/fa";
 import { MdOutlineSecurity } from "react-icons/md";
-
-const mockEmployees = [
-  {
-    id: 101,
-    name: "Janaka Perera",
-    username: "Janaka",
-    email: "janaka.p@usermail.com",
-    mobile: "+94 77 123 4567",
-    role: "Admin",
-  },
-  {
-    id: 102,
-    name: "Lalitha Mendis",
-    username: "Mendis",
-    email: "lalitha.m@usermail.com",
-    mobile: "+94 71 987 6543",
-    role: "Manager",
-  },
-  {
-    id: 103,
-    name: "Nishan Silva",
-    username: "Nish",
-    email: "nishan.s@usermail.com",
-    mobile: "+94 76 555 1111",
-    role: "Super Admin",
-  },
-  {
-    id: 104,
-    name: "Priya Fernando",
-    username: "Priya25",
-    email: "priya.f@usermail.com",
-    mobile: "+94 77 222 3333",
-    role: "Manager",
-  },
-];
+import Swal from "sweetalert2";
 
 const ManageEmployees = () => {
-  const [employees, setEmployees] = useState(mockEmployees);
+  const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/admin/auth/admins");
+      setEmployees(response.data);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
 //   const handleVerifyToggle = (id) => {
 //     setEmployees((prevEmployees) =>
@@ -55,25 +38,35 @@ const ManageEmployees = () => {
 //     );
 //   };
 
-  const handleDelete = (id) => {
-    const employeeToDelete = employees.find((employee) => employee.id === id);
-    if (
-      window.confirm(
-        `Are you sure you want to delete employee: ${employeeToDelete.name} (ID: ${id})?`
-      )
-    ) {
-      setEmployees((prevEmployees) =>
-        prevEmployees.filter((employee) => employee.id !== id)
-      );
+  const handleDelete = async (id, name) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: `Delete admin ${name}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete"
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:5000/api/admin/auth/admins/${id}`);
+        setEmployees(employees.filter((emp) => emp.id !== id));
+        Swal.fire("Deleted!", "Admin has been removed.", "success");
+      } catch (error) {
+        Swal.fire("Error", "Could not delete admin.", "error");
+      }
     }
-  }; // Filter employees based on search term (name, email, mobile, or city)
+  };
 
   const filteredEmployee = employees.filter(
     (employee) =>
       employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.mobile.includes(searchTerm)
+      employee.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <div className="loader">Loading...</div>;
 
   return (
     <div className="dashboard-wrapper">
@@ -82,7 +75,7 @@ const ManageEmployees = () => {
         <div className="list-actions-bar">
           <input
             type="text"
-            placeholder="Search by Name, Email, or Mobile..."
+            placeholder="Search by Name, Email, or Username..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="list-search-input"
@@ -97,7 +90,6 @@ const ManageEmployees = () => {
                 <th>Name</th>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Mobile</th>
                 <th>Role</th>
                 <th>Actions</th>
               </tr>
@@ -115,9 +107,6 @@ const ManageEmployees = () => {
                     </td>
                     <td data-label="Email" className="td-email">
                       {employee.email}
-                    </td>
-                    <td data-label="Mobile" className="td-mobile">
-                      {employee.mobile}
                     </td>
                     <td data-label="Role" className="td-role">
                       <span className="user-role">{employee.role}</span>
@@ -141,7 +130,7 @@ const ManageEmployees = () => {
                       <button
                         className="action-btn delete-btn"
                         title="Delete Employee"
-                        onClick={() => handleDelete(employee.id)}
+                        onClick={() => handleDelete(employee.id, employee.name)}
                       >
                         <FaTrash />
                       </button>
@@ -150,7 +139,7 @@ const ManageEmployees = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="no-results">
+                  <td colSpan="6" className="no-results">
                     No employees found matching your search.
                   </td>
                 </tr>
