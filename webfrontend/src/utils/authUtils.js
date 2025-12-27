@@ -17,6 +17,8 @@ export const logoutAdmin = (message = "Your session has expired due to inactivit
     // We can also store the message in sessionStorage to display it on the login page after redirect
     sessionStorage.setItem("sessionTimeoutMessage", message);
     
+    // sessionStorage.setItem("logoutMessage", message);
+
     // Redirect to the login page
     window.location.href = "/admin/login";
 };

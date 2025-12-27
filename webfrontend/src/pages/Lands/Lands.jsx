@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer'
 import landsData from '../../utils/landsData' 
@@ -10,7 +11,9 @@ import { Link } from 'react-router-dom'
 
 const Lands = () => {
 
-    const [favorites, setFavorites] = useState([])
+  const [lands, setLands] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [favorites, setFavorites] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     verified: '',
@@ -19,6 +22,21 @@ const Lands = () => {
     landSize: ''
   })
   const landsPerPage = 10
+
+  // Fetch lands from API
+  useEffect(() => {
+    const fetchLands = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/ads/published-lands');
+        setLands(response.data);
+      } catch (error) {
+        console.error("Error loading lands:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLands();
+  }, []);
 
   const toggleFavorite = (id) => {
     setFavorites((prev) =>
@@ -29,17 +47,11 @@ const Lands = () => {
   }
 
   // Apply filters
-  const filteredLands = landsData.filter((land) => {
-    const matchesVerified =
-      filters.verified === '' ||
-      (filters.verified === 'true' ? land.verified : !land.verified)
-    const matchesMinPrice =
-      filters.minPrice === '' || land.price >= Number(filters.minPrice)
-    const matchesMaxPrice =
-      filters.maxPrice === '' || land.price <= Number(filters.maxPrice)
-    const matchesLandSize =
-      filters.landSize === '' || land.size >= Number(filters.landSize)
-
+  const filteredLands = lands.filter((land) => {
+    const matchesVerified = filters.verified === '' || (filters.verified === 'true' ? land.verified : !land.verified)
+    const matchesMinPrice = filters.minPrice === '' || land.price >= Number(filters.minPrice)
+    const matchesMaxPrice = filters.maxPrice === '' || land.price <= Number(filters.maxPrice)
+    const matchesLandSize = filters.landSize === '' || land.size >= Number(filters.landSize)
     return matchesVerified && matchesMinPrice && matchesMaxPrice && matchesLandSize
   })
 
@@ -48,6 +60,8 @@ const Lands = () => {
   const indexOfFirstLand = indexOfLastLand - landsPerPage
   const currentLands = filteredLands.slice(indexOfFirstLand, indexOfLastLand)
   const totalPages = Math.ceil(filteredLands.length / landsPerPage)
+
+  if (loading) return <div className="loader">Loading Lands...</div>;
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
 
@@ -135,7 +149,12 @@ const Lands = () => {
               {currentLands.length > 0 ? (
                 currentLands.map((land) => (
                   <div key={land.id} className="land-card">
-                    <img src={land.image} alt={land.title} className="land-image" />
+                    <img 
+                        src={`http://localhost:5000/images/${land.image}`} 
+                        alt={land.title} 
+                        className="land-image" 
+                        onError={(e) => e.target.src = '/default-land.jpg'}
+                    />
 
                     <div className="land-details">
                       <div className="land-title-row">
@@ -150,27 +169,28 @@ const Lands = () => {
                       </div>
 
                       {land.verified ? (
-                        <span className="verified-tag">✔ Verified</span>
+                        <span className="verified-tag">✔ Verified User</span>
                       ) : (
                         <span className="unverified-tag">Not Verified</span>
                       )}
 
                       <p className="land-info">
-                        {land.size} Perches &nbsp; | &nbsp; {land.location}
+                        {land.size} Perches &nbsp; | &nbsp; {land.city}
                       </p>
 
                       <div>
                         <span className="secondaryText price">
-                          <span style={{ color: 'var(--primary)' }}>$</span>
-                          <span className="land-price">{land.price}</span>
+                          <span style={{ color: 'var(--primary)' }}>LKR</span>
+                          <span className="land-price">{Number(land.price).toLocaleString()}</span>
+                          <small> /perch</small>
                         </span>
                       </div>
 
                       <div className="card-bottom">
-                        <Link to={`/landdetails`}>
+                        <Link to={`/landdetails/${land.id}`}>
                           <button className="button-2">Find Out More</button>
                         </Link>
-                        <p className="land-time">⏰ {land.published}</p>
+                        <p className="land-time">⏰ {new Date(land.published).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>

@@ -69,7 +69,7 @@ const Header = () => {
         {/* logo */}
         <Link to="/">
           <img
-            src="./intellipropicon.png"
+            src="/intellipropicon.png"
             alt="logo"
             width={190}
             className="logo-click"

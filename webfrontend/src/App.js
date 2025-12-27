@@ -82,7 +82,8 @@ function App() {
             }
           />
           <Route path="/housedetails" element={<HouseDetail />} />
-          <Route path="/landdetails" element={<LandDetails />} />
+          <Route path="/landdetails/:id" element={<LandDetails />} />
+
           {/* ------------------------- ADMIN PANEL ------------------------- */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/admin-register" element={<AdminRegister/>}/>

@@ -3,6 +3,11 @@
   padding-top: 130px;
 }
 
+.admin-dashboard-content {
+  min-height: 100vh;
+  height: 100%;
+}
+
 .list-title {
   font-size: 1.7rem;
   color: #333;

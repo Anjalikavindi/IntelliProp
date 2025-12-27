@@ -181,7 +181,7 @@ const Houses = () => {
 
                       <div>
                         <span className="secondaryText price">
-                          <span style={{ color: "var(--primary)" }}>$</span>
+                          <span style={{ color: "var(--primary)" }}>LKR</span>
                           <span className="house-price">{house.price}</span>
                         </span>
                       </div>

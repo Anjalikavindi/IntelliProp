@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
@@ -9,17 +9,21 @@ import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import MenuIcon from "@mui/icons-material/Menu";
+import { logoutAdmin } from "../../utils/authUtils";
 
 const Sidebar = ({ open, setOpen }) => {
   const navigate = useNavigate();
   const [active, setActive] = useState("Dashboard");
+  const [adminName, setAdminName] = useState("Admin");
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("adminUser");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setAdminName(parsedUser.full_name || "Admin");
+    }
+  }, []);
   
-  const user = {
-    name: "Anjalika Dikkumbura",
-    avatar: "https://i.pravatar.cc/150?img=5", 
-  };
-
   const menuItems = [
     { name: "Dashboard", icon: <SpaceDashboardIcon />, path: "/admin/dashboard" },
     { name: "Residencies", icon: <RealEstateAgentIcon />, path: "/admin/residencies-ads" },
@@ -28,17 +32,22 @@ const Sidebar = ({ open, setOpen }) => {
     { name: "Registered Users", icon: <HowToRegIcon />, path: "/admin/registered-users" },
     { name: "Manage Admins", icon: <HowToRegIcon />, path: "/admin/manage-admins" },
     { name: "Profile", icon: <PersonIcon />, path: "/admin/admin-profile" },
-    { name: "Logout", icon: <LogoutIcon />, path: "/admin/login" },
+    { name: "Logout", icon: <LogoutIcon />, path: null },
   ];
 
   const handleMenuClick = (item) => {
+    // Check if the clicked item is Logout
+    if (item.name === "Logout") {
+      logoutAdmin("You have successfully logged out."); 
+      return; // Stop further execution
+    }
+
     setActive(item.name);
-    
     if (item.path) {
       navigate(item.path);
     }
     if (setOpen) {
-        setOpen(false);
+      setOpen(false);
     }
   };
 
@@ -52,13 +61,13 @@ const Sidebar = ({ open, setOpen }) => {
     <div className={`admin-sidebar ${open ? "open" : ""}`}>
       <div className="admin-user-section vertical">
         <img
-          src={user.avatar}
+          src="https://i.pravatar.cc/150?img=5"
           alt="User"
           className="admin-user-avatar"
         />
         <div>
           <h6 className="admin-greeting">Hello,</h6>
-          <h3 className="admin-user-name">{user.name}</h3>
+          <h3 className="admin-user-name">{adminName}</h3>
         </div>
       </div>
 

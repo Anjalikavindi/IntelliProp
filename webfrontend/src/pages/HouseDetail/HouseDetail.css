@@ -297,7 +297,6 @@
 .negotiable {
   color: var(--primary);
   font-weight: 600;
-  margin-top: 3px;
 }
 
 .detail-box {
@@ -315,7 +314,6 @@
 .ref {
   font-size: 0.8rem;
   color: #555;
-  margin-top: 1rem;
 }
 
 /* ---------- CONTACT CARD ---------- */

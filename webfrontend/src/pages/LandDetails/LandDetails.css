@@ -290,6 +290,7 @@
 .price-main {
   font-size: 1.6rem;
   font-weight: 700;
+  padding-top: 18px;
   color: var(--black);
 }
 
@@ -302,7 +303,11 @@
 .negotiable {
   color: var(--primary);
   font-weight: 600;
-  margin-top: 3px;
+  padding-bottom: 20px;
+}
+
+.price-main.start-price {
+  padding-top: 0;
 }
 
 .bid-box {
@@ -355,6 +360,9 @@
 .ref {
   font-size: 0.8rem;
   color: #555;
+}
+
+.ref-published{
   margin-top: 1rem;
 }
 
@@ -372,6 +380,10 @@
 .masked-number {
   font-size: 1.3rem;
   font-weight: 700;
+}
+
+.masked-number:hover{
+  cursor: pointer;
 }
 
 .reveal-text {
@@ -461,4 +473,52 @@
   .ads-row {
     flex-wrap: wrap;
   }
+}
+
+
+
+
+
+/* Auction */
+.bid-status-row {
+  display: flex; 
+  justify-content: center;
+  /* align-items: right; */
+  margin-top: 10px;
+}
+
+.timer-text {
+  text-align: end;
+  font-weight: bold;
+  color: #e74c3c; /* Red for urgency */
+  background: #fdf2f2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.timer-text.expired {
+  color: #7f8c8d;
+  background: #ecf0f1;
+}
+
+.closed-auction-msg {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.login-warning{
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 12px;
+  padding-top: 2px;
+}
+
+.login-warning a{
+  color: #2d68c0;
 }

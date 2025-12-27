@@ -160,9 +160,9 @@
   color: #38761d; /* Darker green for Active */
 }
 
-.status-completed {
+.status-closed {
   background-color: #e9ecef;
-  color: #6c757d; /* Gray for Completed */
+  color: var(--primary); /* Gray for Completed */
 }
 
 .status-cancelled {

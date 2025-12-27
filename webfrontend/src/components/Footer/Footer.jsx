@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="paddings innerWidth flexCenter f-container">
         {/* About Section */}
         <div className="flexColStart f-section">
-          <img src="./intellipropicon.png" alt="logo" width={220} />
+          <img src="/intellipropicon.png" alt="logo" width={220} />
           <span className="secondaryText">
             Our vision is to make all people <br />
             the best place to live for them.
