@@ -9,6 +9,9 @@ import adRoutes from "./routes/website/adRoutes.js";
 import adminAuthRoutes from "./routes/admin/adminAuthRoutes.js";
 import adminAdsRoutes from "./routes/admin/adminAdsRoutes.js";
 import adminUserRoutes from "./routes/admin/UserRoutes.js";
+import districtRoutes from "./routes/website/districtRoutes.js";
+import areaRoutes from "./routes/website/areaRoutes.js";
+import predictionRoutes from "./routes/website/predictionRoutes.js";
 
 dotenv.config();
 
@@ -34,6 +37,12 @@ app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin/ads", adminAdsRoutes);
 //Users
 app.use("/api/admin/users", adminUserRoutes);
+//District list
+app.use("/api/districts", districtRoutes);
+//Areas
+app.use("/api/areas", areaRoutes);
+//House Price Prediction
+app.use("/api/predict", predictionRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

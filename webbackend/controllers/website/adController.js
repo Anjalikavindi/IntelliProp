@@ -15,8 +15,10 @@ function cleanObject(obj) {
 const executeQuery = (query, values) => {
   return new Promise((resolve, reject) => {
     db.execute(query, values, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
+      if (err) {
+        console.error("SQL Error:", err.sqlMessage, "Query:", query, "Values:", values);
+        reject(err);
+      } else resolve(result);
     });
   });
 };
@@ -26,8 +28,8 @@ export const createAd = async (req, res) => {
     let {
       title,
       description,
-      city,
-      location_type,
+      district,
+      area,
       property_category,
       house_details,
       land_details,
@@ -36,6 +38,12 @@ export const createAd = async (req, res) => {
     } = req.body;
 
     const user_id = req.userId;
+    if (!user_id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
 
     if (!property_category) {
       return res.status(400).json({
@@ -58,7 +66,7 @@ export const createAd = async (req, res) => {
     const allowBiddingValue =
       allow_bidding === "true" || allow_bidding === true ? 1 : 0;
 
-    // 2️⃣ Required fields for House
+    // Required fields for House
     if (property_category === "House") {
       const requiredHouseFields = [
         "ad_type",
@@ -67,7 +75,6 @@ export const createAd = async (req, res) => {
         "floors",
         "bedrooms",
         "bathrooms",
-        "price",
       ];
 
       for (let field of requiredHouseFields) {
@@ -80,7 +87,7 @@ export const createAd = async (req, res) => {
       }
     }
 
-    // 3️⃣ Required fields for Land
+    // Required fields for Land
     if (property_category === "Land") {
       const requiredLandFields = ["land_type", "land_size", "price_per_perch"];
       for (let field of requiredLandFields) {
@@ -107,7 +114,7 @@ export const createAd = async (req, res) => {
       }
     }
 
-    // 4️⃣ At least one image should be uploaded
+    // At least one image should be uploaded
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
         success: false,
@@ -116,11 +123,11 @@ export const createAd = async (req, res) => {
     }
 
     // -----------------------------
-    // 1️⃣ INSERT INTO ADS TABLE
+    // INSERT INTO ADS TABLE
     // -----------------------------
     const adQuery = `
       INSERT INTO ads 
-      (user_id, title, description, city, location_type, property_category, publish_status)
+      (user_id, title, description, district, area, property_category, publish_status)
       VALUES (?, ?, ?, ?, ?, ?, 'Pending')
     `;
 
@@ -128,22 +135,37 @@ export const createAd = async (req, res) => {
       user_id,
       title,
       description,
-      city,
-      location_type,
+      district,
+      area,
       property_category,
     ]);
 
     const ad_id = adResult.insertId;
 
     // -----------------------------
-    // 2️⃣ INSERT HOUSE DETAILS (if House)
+    // INSERT HOUSE DETAILS (if House)
     // -----------------------------
     if (property_category === "House" && house_details) {
       const houseQuery = `
-        INSERT INTO house_details 
-        (ad_id, land_size, area_sqft, floors, bedrooms, bathrooms, price, negotiable, ad_type)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
+  INSERT INTO house_details 
+  (
+    ad_id,
+    land_size,
+    area_sqft,
+    floors,
+    bedrooms,
+    bathrooms,
+    year_built,
+    water_supply,
+    electricity_type,
+    parking_spots,
+    has_garden,
+    has_ac,
+    negotiable,
+    ad_type
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
       await executeQuery(houseQuery, [
         ad_id,
@@ -152,14 +174,19 @@ export const createAd = async (req, res) => {
         house_details.floors,
         house_details.bedrooms,
         house_details.bathrooms,
-        house_details.price,
+        house_details.year_built,
+        house_details.water_supply,
+        house_details.electricity_type,
+        house_details.parking_spots,
+        house_details.has_garden ? 1 : 0,
+        house_details.has_ac ? 1 : 0,
         house_details.negotiable ? 1 : 0,
         house_details.ad_type,
       ]);
     }
 
     // -----------------------------
-    // 3️⃣ INSERT LAND DETAILS
+    // INSERT LAND DETAILS
     // -----------------------------
     if (property_category === "Land" && land_details) {
       const landQuery = `
@@ -178,7 +205,7 @@ export const createAd = async (req, res) => {
     }
 
     // -----------------------------
-    // 4️⃣ INSERT AUCTION DETAILS (if bidding)
+    // INSERT AUCTION DETAILS (if bidding)
     // -----------------------------
     if (allowBiddingValue === 1 && auction_details) {
       const auctionQuery = `
@@ -195,7 +222,7 @@ export const createAd = async (req, res) => {
     }
 
     // -----------------------------
-    // ⭐ SAVE IMAGES
+    // SAVE IMAGES
     // -----------------------------
 
     if (req.files && req.files.length > 0) {
@@ -214,7 +241,7 @@ export const createAd = async (req, res) => {
     }
 
     // -----------------------------
-    // ⭐ SUCCESS RESPONSE
+    // SUCCESS RESPONSE
     // -----------------------------
     return res.status(201).json({
       success: true,

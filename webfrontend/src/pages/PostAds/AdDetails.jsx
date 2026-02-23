@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import GetStarted from "../../components/GetStarted/GetStarted";
 import Footer from "../../components/Footer/Footer";
@@ -17,8 +17,11 @@ const AdDetails = () => {
   // Common fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [city, setCity] = useState("");
-  const [locationType] = useState("Rural");
+  const [districtId, setDistrictId] = useState("");
+  const [district, setDistrict] = useState("");
+  const [districts, setDistricts] = useState([]);
+  const [subArea, setSubArea] = useState("");
+  const [areas, setAreas] = useState([]);
   const [images, setImages] = useState(Array(6).fill(null));
 
   // House fields
@@ -29,9 +32,17 @@ const AdDetails = () => {
     floors: "",
     bedrooms: "",
     bathrooms: "",
-    price: "",
+    year_built: "",
+    water_supply: "",
+    electricity_type: "",
+    parking_spots: 0,
+    has_garden: false,
+    has_ac: false,
     negotiable: false,
   });
+
+  const [predictedPrice, setPredictedPrice] = useState(null);
+  const [isPredicting, setIsPredicting] = useState(false);
 
   // Land fields
   const [land, setLand] = useState({
@@ -44,6 +55,33 @@ const AdDetails = () => {
   const [startingPrice, setStartingPrice] = useState("");
   const [auctionEndDateTime, setAuctionEndDateTime] = useState("");
 
+  useEffect(() => {
+    fetch("http://localhost:5000/api/districts")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDistricts(data.districts);
+        }
+      })
+      .catch((err) => console.error("Error fetching districts:", err));
+  }, []);
+
+  useEffect(() => {
+    if (!districtId) {
+      setAreas([]);
+      return;
+    }
+
+    fetch(`http://localhost:5000/api/areas/${districtId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setAreas(data.areas);
+        }
+      })
+      .catch((err) => console.error("Error fetching areas:", err));
+  }, [districtId]);
+
   // RESET FORM FUNCTION
   const resetForm = () => {
     setPropertyCategory("");
@@ -51,8 +89,11 @@ const AdDetails = () => {
 
     setTitle("");
     setDescription("");
-    setCity("");
+    setDistrict("");
     setImages(Array(6).fill(null));
+
+    setPredictedPrice(null);
+    setIsPredicting(false);
 
     setHouse({
       ad_type: "",
@@ -61,7 +102,12 @@ const AdDetails = () => {
       floors: "",
       bedrooms: "",
       bathrooms: "",
-      price: "",
+      year_built: "",
+      water_supply: "",
+      electricity_type: "",
+      parking_spots: 0,
+      has_garden: false,
+      has_ac: false,
       negotiable: false,
     });
 
@@ -73,6 +119,77 @@ const AdDetails = () => {
 
     setStartingPrice("");
     setAuctionEndDateTime("");
+  };
+
+  //House Price Prediction
+  const handlePredictPrice = async () => {
+    // Validation
+    if (
+      !house.land_size ||
+      !house.area_sqft ||
+      !house.floors ||
+      !house.bedrooms ||
+      !house.bathrooms ||
+      !house.year_built ||
+      !house.water_supply ||
+      !house.electricity_type
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing House Details",
+        text: "Please fill required house details before prediction.",
+      });
+      return;
+    }
+
+    try {
+      setIsPredicting(true);
+
+      const response = await fetch(
+        "http://localhost:5000/api/predict/house-price",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            district: district,
+            area: subArea,
+
+            perch: Number(house.land_size),
+            bedrooms: Number(house.bedrooms),
+            bathrooms: Number(house.bathrooms),
+            kitchen_area_sqft: Number(house.area_sqft),
+            parking_spots: Number(house.parking_spots),
+            has_garden: house.has_garden ? 1 : 0,
+            has_ac: house.has_ac ? 1 : 0,
+            water_supply: house.water_supply,
+            electricity: house.electricity_type,
+            floors: Number(house.floors),
+            year_built: Number(house.year_built),
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPredictedPrice(data.predicted_price);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Prediction Failed",
+          text: data.message || "Could not generate prediction.",
+        });
+      }
+    } catch (error) {
+      console.error("Prediction error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Server Error",
+        text: "Prediction service unavailable.",
+      });
+    } finally {
+      setIsPredicting(false);
+    }
   };
 
   // Submit Handler
@@ -90,7 +207,7 @@ const AdDetails = () => {
     }
 
     // Validate required fields
-    if (!title || !description || !city || !propertyCategory) {
+    if (!title || !description || !district || !subArea || !propertyCategory) {
       Swal.fire({
         icon: "warning",
         title: "Missing Fields",
@@ -100,12 +217,21 @@ const AdDetails = () => {
       return;
     }
 
+    if (propertyCategory === "House" && !predictedPrice) {
+      Swal.fire({
+        icon: "warning",
+        title: "Generate Price First",
+        text: "Please generate the predicted price before posting.",
+      });
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
-      formData.append("city", city);
-      formData.append("location_type", locationType);
+      formData.append("district", district);
+      formData.append("area", subArea);
       formData.append("property_category", propertyCategory);
 
       formData.append("house_details", JSON.stringify(house));
@@ -258,26 +384,47 @@ const AdDetails = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>City</label>
+                  <label>District</label>
                   <select
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
+                    value={districtId}
+                    onChange={(e) => {
+                      const selectedDistrict = districts.find(
+                        (d) => d.district_id === Number(e.target.value), // ensure number
+                      );
+                      if (selectedDistrict) {
+                        setDistrictId(selectedDistrict.district_id); // for fetching areas
+                        setDistrict(selectedDistrict.district_name); // for submission
+                        setSubArea(""); // reset sub area
+                      } else {
+                        setDistrictId("");
+                        setDistrict("");
+                        setSubArea("");
+                      }
+                    }}
                   >
-                    <option>Select a city</option>
-                    <option>Colombo</option>
-                    <option>Kandy</option>
-                    <option>Galle</option>
+                    <option value="">Select a district</option>
+                    {districts.map((d) => (
+                      <option key={d.district_id} value={d.district_id}>
+                        {d.district_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>Location Type</label>
-                  <input
-                    type="text"
-                    value="Rural"
-                    placeholder="Location type will appear here"
-                    readOnly
-                  />
+                  <label>Sub Area</label>
+                  <select
+                    value={subArea}
+                    onChange={(e) => setSubArea(e.target.value)}
+                    disabled={!district}
+                  >
+                    <option value="">Select a sub area</option>
+                    {areas.map((area) => (
+                      <option key={area.area_id} value={area.area_name}>
+                        {area.area_name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -384,14 +531,93 @@ const AdDetails = () => {
                       </div>
 
                       <div className="form-group">
-                        <label>Price (LKR)</label>
+                        <label>Year Built</label>
                         <input
                           type="number"
-                          value={house.price}
+                          value={house.year_built}
                           onChange={(e) =>
-                            setHouse({ ...house, price: e.target.value })
+                            setHouse({ ...house, year_built: e.target.value })
                           }
                         />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Water Supply</label>
+                        <select
+                          value={house.water_supply}
+                          onChange={(e) =>
+                            setHouse({ ...house, water_supply: e.target.value })
+                          }
+                        >
+                          <option value="">Select</option>
+                          <option>Pipe-borne</option>
+                          <option>Well</option>
+                          <option>Both</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Electricity Type</label>
+                        <select
+                          value={house.electricity_type}
+                          onChange={(e) =>
+                            setHouse({
+                              ...house,
+                              electricity_type: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select</option>
+                          <option>Single Phase</option>
+                          <option>Three Phase</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Parking Spots</label>
+                        <select
+                          value={house.parking_spots}
+                          onChange={(e) =>
+                            setHouse({
+                              ...house,
+                              parking_spots: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                        </select>
+                      </div>
+
+                      <div className="form-group negotiable-wrap">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={house.has_garden}
+                            onChange={(e) =>
+                              setHouse({
+                                ...house,
+                                has_garden: e.target.checked,
+                              })
+                            }
+                          />
+                          Garden Availability
+                        </label>
+                      </div>
+
+                      <div className="form-group negotiable-wrap">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={house.has_ac}
+                            onChange={(e) =>
+                              setHouse({ ...house, has_ac: e.target.checked })
+                            }
+                          />
+                          A/C Availability
+                        </label>
                       </div>
 
                       <div className="form-group negotiable-wrap">
@@ -408,6 +634,36 @@ const AdDetails = () => {
                           />{" "}
                           Negotiable
                         </label>
+                      </div>
+
+                      {/* -------- PRICE PREDICTION SECTION -------- */}
+                      <div className="prediction-box">
+                        {predictedPrice && (
+                          <div
+                            className="predicted-price-display"
+                            style={{ marginBottom: "15px" }}
+                          >
+                            <label>AI Predicted Market Price (LKR)</label>
+                            <h2 className="predicted-price">
+                              Rs. {Number(predictedPrice).toLocaleString()}
+                            </h2>
+                            <p className="note-text">
+                              This price is estimated based on current market
+                              data.
+                            </p>
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          className="button-2"
+                          onClick={handlePredictPrice}
+                          disabled={isPredicting}
+                        >
+                          {isPredicting
+                            ? "Generating Price..."
+                            : "Generate Predicted Price"}
+                        </button>
                       </div>
                     </div>
                   )}
