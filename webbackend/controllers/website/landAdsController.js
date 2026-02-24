@@ -6,7 +6,8 @@ export const getPublishedLands = async (req, res) => {
     SELECT 
       a.ad_id AS id,
       a.title,
-      a.city,
+      a.district,
+      a.area,
       a.updated_at AS published,
       ld.land_size AS size,
       ld.price_per_perch AS price,
@@ -34,7 +35,7 @@ export const getLandDetailById = async (req, res) => {
 
   const query = `
     SELECT 
-      a.ad_id, a.title, a.description, a.city, a.property_category, a.updated_at,
+      a.ad_id, a.title, a.description, a.district, a.area, a.property_category, a.updated_at,
       ld.land_type, ld.land_size, ld.price_per_perch, ld.allow_bidding,
       u.name AS seller_name, u.mobile AS seller_mobile, u.is_email_verified,
       auc.auction_end, auc.current_highest_bid, auc.status AS auction_status

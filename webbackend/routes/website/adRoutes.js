@@ -2,6 +2,7 @@ import express from "express";
 import { verifyToken } from "../../middleware/authMiddleware.js";
 import { createAd } from "../../controllers/website/adController.js";
 import { getPublishedLands, getLandDetailById, placeBid } from "../../controllers/website/landAdsController.js";
+import { getPublishedHouses, getHouseById } from "../../controllers/website/houseAdsController.js";
 import upload from "../uploads/upload.js";
 
 const router = express.Router();
@@ -17,5 +18,11 @@ router.get("/published-lands/:id", getLandDetailById);
 
 // Place a bid (Protected)
 router.post("/place-bid", verifyToken, placeBid);
+
+// Published Houses
+router.get("/published-houses", getPublishedHouses);
+
+//House Details
+router.get("/published-houses/:id", getHouseById);
 
 export default router;

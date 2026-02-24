@@ -17,7 +17,7 @@ import {
   FaWhatsapp,
 } from "react-icons/fa";
 import "./LandDetails.css";
-
+import Swal from "sweetalert2";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,7 +41,7 @@ const LandDetails = () => {
     const fetchLandDetails = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/ads/published-lands/${id}`
+          `http://localhost:5000/api/ads/published-lands/${id}`,
         );
         setLand(res.data);
         // Set first image or thumbnail as main image
@@ -71,10 +71,10 @@ const LandDetails = () => {
         } else {
           const days = Math.floor(distance / (1000 * 60 * 60 * 24));
           const hours = Math.floor(
-            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
           );
           const minutes = Math.floor(
-            (distance % (1000 * 60 * 60)) / (1000 * 60)
+            (distance % (1000 * 60 * 60)) / (1000 * 60),
           );
           const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
@@ -88,15 +88,23 @@ const LandDetails = () => {
 
   const handlePlaceBid = async () => {
     if (!token) {
-      alert("Please login or register to place a bid.");
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please login or register to place a bid.",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
 
     const minBid = land.current_highest_bid || land.price_per_perch;
     if (Number(userBid) <= Number(minBid)) {
-      alert(
-        `Your bid must be higher than LKR ${Number(minBid).toLocaleString()}`
-      );
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Bid",
+        text: `Your bid must be higher than LKR ${Number(minBid).toLocaleString()}`,
+        confirmButtonColor: "#d33",
+      });
       return;
     }
 
@@ -105,15 +113,27 @@ const LandDetails = () => {
       const res = await axios.post(
         "http://localhost:5000/api/ads/place-bid",
         { ad_id: land.ad_id, bid_amount: userBid },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
-      alert(res.data.message);
+      Swal.fire({
+        icon: "success",
+        title: "Bid Placed Successfully!",
+        text: res.data.message,
+        confirmButtonColor: "#28a745",
+      }).then(() => {
+        window.location.reload();
+      });
       setUserBid("");
       // Refresh details to show new highest bid
       window.location.reload();
     } catch (err) {
-      alert(err.response?.data?.message || "Error placing bid");
+      Swal.fire({
+        icon: "error",
+        title: "Bid Failed",
+        text: err.response?.data?.message || "Error placing bid",
+        confirmButtonColor: "#d33",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -122,7 +142,7 @@ const LandDetails = () => {
   // Toggle heart color on click
   const toggleFavorite = (index) => {
     setFavorites((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
 
@@ -264,13 +284,12 @@ const LandDetails = () => {
                     <h2 className="price-main">
                       LKR{" "}
                       {Number(
-                        land.current_highest_bid || land.price_per_perch
+                        land.current_highest_bid || land.price_per_perch,
                       ).toLocaleString()}
                       <span className="perch">/ PERCH</span>
                     </h2>
                     <p className="negotiable">Latest Bid</p>
                     <div className="bid-status-row">
-                      
                       {land.auction_end && (
                         <span
                           className={`timer-text ${isExpired ? "expired" : ""}`}
@@ -345,7 +364,11 @@ const LandDetails = () => {
                   <span>Type</span> <strong>Sale</strong>
                 </div> */}
                 <div className="detail-row">
-                  <span>City</span> <strong>{land.city}</strong>
+                  <span>Location</span>{" "}
+                  <strong>
+                    {land.district}
+                    {land.area ? `, ${land.area}` : ""}
+                  </strong>
                 </div>
                 {/* <div className="detail-row">
                   <span>User Verified</span>{" "}
@@ -377,7 +400,7 @@ const LandDetails = () => {
                     window.open(`https://wa.me/${land.seller_mobile}`)
                   }
                 >
-                  <FaWhatsapp /> Chat on Whatsapp
+                  Chat on Whatsapp
                 </button>
                 <button className="owner-btn">Chat with Owner</button>
               </div>

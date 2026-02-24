@@ -30,7 +30,7 @@ const LandList = () => {
   const fetchLandAds = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/admin/ads/lands"
+        "http://localhost:5000/api/admin/ads/lands",
       );
       setLandAds(response.data);
       setLoading(false);
@@ -63,7 +63,7 @@ const LandList = () => {
       await axios.put(
         `http://localhost:5000/api/admin/ads/publish/${adData.adId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       MySwal.fire({
@@ -75,8 +75,10 @@ const LandList = () => {
 
       setLandAds((prev) =>
         prev.map((ad) =>
-          ad.adId === adData.adId ? { ...ad, publishedStatus: "Published" } : ad
-        )
+          ad.adId === adData.adId
+            ? { ...ad, publishedStatus: "Published" }
+            : ad,
+        ),
       );
       if (isModalOpen) closeModal();
     } catch (error) {
@@ -107,7 +109,7 @@ const LandList = () => {
       await axios.put(
         `http://localhost:5000/api/admin/ads/reject/${adData.adId}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       MySwal.fire({
@@ -119,8 +121,8 @@ const LandList = () => {
 
       setLandAds((prev) =>
         prev.map((ad) =>
-          ad.adId === adData.adId ? { ...ad, publishedStatus: "Rejected" } : ad
-        )
+          ad.adId === adData.adId ? { ...ad, publishedStatus: "Rejected" } : ad,
+        ),
       );
       if (isModalOpen) closeModal();
     } catch (error) {
@@ -149,7 +151,8 @@ const LandList = () => {
 
   const prevImage = () => {
     setCurrentImageIndex(
-      (prev) => (prev - 1 + selectedAd.images.length) % selectedAd.images.length
+      (prev) =>
+        (prev - 1 + selectedAd.images.length) % selectedAd.images.length,
     );
   };
 
@@ -159,14 +162,14 @@ const LandList = () => {
         `http://localhost:5000/api/admin/ads/lands/toggle-bid/${id}`,
         {
           allowBidding: !currentStatus,
-        }
+        },
       );
       // Refresh local state
       setLandAds((prev) =>
         prev.map((ad) =>
           // Change 'adId' to 'ad.adId' and 'adId' to 'id'
-          ad.adId === id ? { ...ad, allowBidding: !currentStatus } : ad
-        )
+          ad.adId === id ? { ...ad, allowBidding: !currentStatus } : ad,
+        ),
       );
     } catch (error) {
       alert("Failed to update bidding status");
@@ -177,7 +180,8 @@ const LandList = () => {
   const filteredAds = landAds.filter(
     (ad) =>
       ad.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ad.city.toLowerCase().includes(searchTerm.toLowerCase())
+      ad.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (ad.area && ad.area.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   if (loading) return <div className="padding-top">Loading Land Ads...</div>;
@@ -206,7 +210,7 @@ const LandList = () => {
               <tr>
                 <th>ID</th>
                 <th>Thumbnail</th>
-                <th>Title & City</th>
+                <th>Title & Location</th>
                 <th>Seller Name</th>
                 <th>Type & Size</th>
                 <th>Created At</th>
@@ -231,10 +235,12 @@ const LandList = () => {
                         className="land-thumbnail"
                       />
                     </td>
-                    <td data-label="Title & City" className="td-title-city">
+                    <td data-label="Title & Location" className="td-title-city">
                       <div className="title-city-group">
                         <span className="ad-title">{ad.title}</span>
-                        <span className="ad-city">{ad.city}</span>
+                        <span className="ad-city">
+                          {ad.district}, {ad.area}
+                        </span>
                       </div>
                     </td>
                     <td data-label="Seller Name" className="td-seller-name">
@@ -376,7 +382,7 @@ const LandList = () => {
                     <span>{selectedAd.landSize} Perches</span>
                   </div>
                   <div className="detail-item">
-                    <strong>City:</strong> <span>{selectedAd.city}</span>
+                    <strong>District:</strong> <span>{selectedAd.district}</span>
                   </div>
                   <div className="detail-item">
                     <strong>Price per Perch:</strong>{" "}

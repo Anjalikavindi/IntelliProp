@@ -7,7 +7,8 @@ export const getLandAdsList = async (req, res) => {
             a.ad_id AS adId,
             ld.land_id AS id,
             a.title,
-            a.city,
+            a.district,
+            a.area,
             a.description,
             a.created_at AS createdAt,
             a.publish_status AS publishedStatus,
@@ -54,7 +55,7 @@ export const getLandAdsList = async (req, res) => {
 
       return {
         ...ad,
-        sellerEmail: ad.sellerEmail, 
+        sellerEmail: ad.sellerEmail,
         sellerMobile: ad.sellerMobile,
         thumbnail: thumbnailObj ? thumbnailObj.path : null,
         images: images,

@@ -16,7 +16,14 @@ const executeQuery = (query, values) => {
   return new Promise((resolve, reject) => {
     db.execute(query, values, (err, result) => {
       if (err) {
-        console.error("SQL Error:", err.sqlMessage, "Query:", query, "Values:", values);
+        console.error(
+          "SQL Error:",
+          err.sqlMessage,
+          "Query:",
+          query,
+          "Values:",
+          values,
+        );
         reject(err);
       } else resolve(result);
     });
@@ -35,6 +42,7 @@ export const createAd = async (req, res) => {
       land_details,
       allow_bidding,
       auction_details,
+      price,
     } = req.body;
 
     const user_id = req.userId;
@@ -82,6 +90,12 @@ export const createAd = async (req, res) => {
           return res.status(400).json({
             success: false,
             message: "Please fill all required House details.",
+          });
+        }
+        if (!price || Number(price) <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: "Please provide a valid house price.",
           });
         }
       }
@@ -155,6 +169,7 @@ export const createAd = async (req, res) => {
     floors,
     bedrooms,
     bathrooms,
+    price,
     year_built,
     water_supply,
     electricity_type,
@@ -164,7 +179,7 @@ export const createAd = async (req, res) => {
     negotiable,
     ad_type
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
       await executeQuery(houseQuery, [
@@ -174,6 +189,7 @@ export const createAd = async (req, res) => {
         house_details.floors,
         house_details.bedrooms,
         house_details.bathrooms,
+        Number(price),
         house_details.year_built,
         house_details.water_supply,
         house_details.electricity_type,

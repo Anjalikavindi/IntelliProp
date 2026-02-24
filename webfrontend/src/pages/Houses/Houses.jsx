@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
-import housesData from "../../utils/housesData";
 import "./Houses.css";
 import { FaHeart } from "react-icons/fa";
 import GetStarted from "../../components/GetStarted/GetStarted";
 import { Link } from "react-router-dom";
 
 const Houses = () => {
-
-    const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     bedrooms: "",
@@ -17,36 +16,51 @@ const Houses = () => {
     minPrice: "",
     maxPrice: "",
   });
+  const [housesData, setHousesData] = useState([]);
   const housesPerPage = 10;
+  useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/ads/published-houses",
+        );
+        setHousesData(res.data.houses);
+      } catch (err) {
+        console.error("Error fetching houses:", err);
+      }
+    };
 
+    fetchHouses();
+  }, []);
   const toggleFavorite = (id) => {
     setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id],
     );
   };
 
   // Apply filters
   const filteredHouses = housesData.filter((house) => {
     const matchesBedrooms =
-      filters.bedrooms === "" || house.bedrooms === Number(filters.bedrooms);
-    const matchesVerified =
-      filters.verified === "" ||
-      (filters.verified === "true" ? house.verified : !house.verified);
+      filters.bedrooms === "" ||
+      (filters.bedrooms === "4"
+        ? house.bedrooms >= 4
+        : house.bedrooms === Number(filters.bedrooms));
     const matchesMinPrice =
       filters.minPrice === "" || house.price >= Number(filters.minPrice);
     const matchesMaxPrice =
       filters.maxPrice === "" || house.price <= Number(filters.maxPrice);
 
-    return (
-      matchesBedrooms && matchesVerified && matchesMinPrice && matchesMaxPrice
-    );
+    return matchesBedrooms && matchesMinPrice && matchesMaxPrice;
   });
 
   // Pagination calculations
   const indexOfLastHouse = currentPage * housesPerPage;
   const indexOfFirstHouse = indexOfLastHouse - housesPerPage;
-  const currentHouses = housesData.slice(indexOfFirstHouse, indexOfLastHouse);
-  const totalPages = Math.ceil(housesData.length / housesPerPage);
+  const currentHouses = filteredHouses.slice(
+    indexOfFirstHouse,
+    indexOfLastHouse,
+  );
+  const totalPages = Math.ceil(filteredHouses.length / housesPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -109,17 +123,6 @@ const Houses = () => {
                 <option value="4">4+</option>
               </select>
 
-              <label>Verification Status</label>
-              <select
-                name="verified"
-                value={filters.verified}
-                onChange={handleFilterChange}
-              >
-                <option value="">All</option>
-                <option value="true">Verified</option>
-                <option value="false">Not Verified</option>
-              </select>
-
               <label>Min Price ($)</label>
               <input
                 type="number"
@@ -147,9 +150,9 @@ const Houses = () => {
             <div className="houses-grid">
               {currentHouses.length > 0 ? (
                 currentHouses.map((house) => (
-                  <div key={house.id} className="house-card">
+                  <div key={house.ad_id} className="house-card">
                     <img
-                      src={house.image}
+                      src={house.image || "/residencies-bg.jpg"}
                       alt={house.title}
                       className="house-image"
                     />
@@ -159,20 +162,16 @@ const Houses = () => {
                         <h3 className="house-title">{house.title}</h3>
                         <FaHeart
                           className="heart-icon"
-                          onClick={() => toggleFavorite(house.id)}
+                          onClick={() => toggleFavorite(house.ad_id)}
                           style={{
-                            color: favorites.includes(house.id)
+                            color: favorites.includes(house.ad_id)
                               ? "red"
                               : "#ccc",
                           }}
                         />
                       </div>
 
-                      {house.verified ? (
-                        <span className="verified-tag">✔ Verified</span>
-                      ) : (
-                        <span className="unverified-tag">Not Verified</span>
-                      )}
+                      <span className="verified-tag">✔ Verified</span>
 
                       <p className="house-info">
                         {house.bedrooms} Bedrooms &nbsp; | &nbsp;{" "}
@@ -187,10 +186,12 @@ const Houses = () => {
                       </div>
 
                       <div className="card-bottom">
-                        <Link to={`/housedetails`}>
+                        <Link to={`/housedetails/${house.ad_id}`}>
                           <button className="button-2">Find Out More</button>
                         </Link>
-                        <p className="house-time">⏰ {house.published}</p>
+                        <p className="house-time">
+                          ⏰ {new Date(house.created_at).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -222,7 +223,7 @@ const Houses = () => {
       </div>
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Houses
+export default Houses;

@@ -5,7 +5,8 @@ export const getAuctionAdsList = async (req, res) => {
         SELECT 
             auc.auction_id AS id,
             a.title AS adTitle,
-            a.city,
+            a.district,
+            a.area,
             auc.starting_price AS startingPrice,
             auc.current_highest_bid AS currentHighestBid,
             auc.auction_end AS auctionEndTime,
@@ -36,7 +37,8 @@ export const getAuctionAdsList = async (req, res) => {
         const formattedResults = results.map(row => ({
             id: row.id,
             adTitle: row.adTitle,
-            city: row.city,
+            district: row.district,
+            area: row.area,
             startingPrice: row.startingPrice ? `LKR ${parseFloat(row.startingPrice).toLocaleString()}` : "0.00",
             currentHighestBid: row.currentHighestBid ? `LKR ${parseFloat(row.currentHighestBid).toLocaleString()}` : "N/A",
             status: row.status,

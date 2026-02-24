@@ -217,7 +217,7 @@ const AdDetails = () => {
       return;
     }
 
-    if (propertyCategory === "House" && !predictedPrice) {
+    if (propertyCategory === "House" && (!predictedPrice || predictedPrice <= 0)) {
       Swal.fire({
         icon: "warning",
         title: "Generate Price First",
@@ -236,6 +236,7 @@ const AdDetails = () => {
 
       formData.append("house_details", JSON.stringify(house));
       formData.append("land_details", JSON.stringify(land));
+      formData.append("price", Number(predictedPrice));
 
       const auction_details = {
         startingPrice,
@@ -644,12 +645,18 @@ const AdDetails = () => {
                             style={{ marginBottom: "15px" }}
                           >
                             <label>AI Predicted Market Price (LKR)</label>
-                            <h2 className="predicted-price">
-                              Rs. {Number(predictedPrice).toLocaleString()}
-                            </h2>
+                            <input
+                              type="number"
+                              className="predicted-price-input"
+                              value={predictedPrice}
+                              onChange={(e) =>
+                                setPredictedPrice(e.target.value)
+                              }
+                            />
+
                             <p className="note-text">
-                              This price is estimated based on current market
-                              data.
+                              You can adjust this price if needed before
+                              posting.
                             </p>
                           </div>
                         )}

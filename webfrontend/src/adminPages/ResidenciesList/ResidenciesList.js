@@ -33,13 +33,13 @@ const ResidenciesList = () => {
       const token = localStorage.getItem("adminToken"); // Ensure you pass the token for protected routes
       const response = await axios.get(
         "http://localhost:5000/api/admin/ads/residencies",
-        { headers: { Authorization: `Bearer ${token}` } } // Assuming token-based authentication
+        { headers: { Authorization: `Bearer ${token}` } }, // Assuming token-based authentication
       );
       setResidencyAds(response.data);
     } catch (err) {
       console.error("Error fetching residency ads:", err);
       setError(
-        "Failed to load residency ads. Please check the server connection."
+        "Failed to load residency ads. Please check the server connection.",
       );
       // If unauthorized, redirect to login
       if (err.response && err.response.status === 401) {
@@ -81,7 +81,7 @@ const ResidenciesList = () => {
         // Make sure the path is correct
         `http://localhost:5000/api/admin/ads/publish/${adIdToUse}`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       MySwal.fire({
@@ -97,8 +97,8 @@ const ResidenciesList = () => {
         prevAds.map((ad) =>
           ad.id === houseIdToDisplay
             ? { ...ad, publishedStatus: "Published" }
-            : ad
-        )
+            : ad,
+        ),
       );
       if (isModalOpen) {
         closeModal();
@@ -143,7 +143,7 @@ const ResidenciesList = () => {
       await axios.put(
         `http://localhost:5000/api/admin/ads/reject/${adIdToUse}`, // <<< NEW ENDPOINT
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       MySwal.fire({
@@ -158,8 +158,8 @@ const ResidenciesList = () => {
         prevAds.map((ad) =>
           ad.id === houseIdToDisplay
             ? { ...ad, publishedStatus: "Rejected" }
-            : ad
-        )
+            : ad,
+        ),
       );
       if (isModalOpen) {
         closeModal();
@@ -189,14 +189,14 @@ const ResidenciesList = () => {
 
   const nextImage = () => {
     setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % selectedAd.images.length
+      (prevIndex) => (prevIndex + 1) % selectedAd.images.length,
     );
   };
 
   const prevImage = () => {
     setCurrentImageIndex(
       (prevIndex) =>
-        (prevIndex - 1 + selectedAd.images.length) % selectedAd.images.length
+        (prevIndex - 1 + selectedAd.images.length) % selectedAd.images.length,
     );
   };
 
@@ -204,8 +204,9 @@ const ResidenciesList = () => {
   const filteredAds = residencyAds.filter(
     (ad) =>
       ad.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ad.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ad.sellerName.toLowerCase().includes(searchTerm.toLowerCase())
+      ad.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ad.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ad.sellerName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   if (loading) {
@@ -249,7 +250,7 @@ const ResidenciesList = () => {
               <tr>
                 <th>ID</th>
                 <th>Thumbnail</th>
-                <th>Title & City</th>
+                <th>Title & Location</th>
                 <th>Seller Name</th>
                 <th>Size & Area</th>
                 <th>Beds & Baths</th>
@@ -271,10 +272,12 @@ const ResidenciesList = () => {
                         className="residency-thumbnail"
                       />
                     </td>
-                    <td data-label="Title & City" className="td-title-city">
+                    <td data-label="Title & Location" className="td-title-city">
                       <div className="title-city-group">
                         <span className="ad-title">{ad.title}</span>
-                        <span className="ad-city">{ad.city}</span>
+                        <span className="ad-city">
+                          {ad.district} - {ad.area}
+                        </span>
                       </div>
                     </td>
                     <td data-label="Seller Name" className="td-seller-name">
@@ -283,7 +286,7 @@ const ResidenciesList = () => {
                     <td data-label="Size & Area">
                       <div className="size-area-group">
                         <span className="ad-size">Land: {ad.landSize}</span>
-                        <span className="ad-area">Area: {ad.area}</span>
+                        <span className="ad-area">Kitchen Area: {ad.area_sqft}</span>
                       </div>
                     </td>
                     <td data-label="Beds & Baths">
@@ -403,7 +406,11 @@ const ResidenciesList = () => {
                     <strong>Property ID:</strong> <span>{selectedAd.id}</span>
                   </div>
                   <div className="detail-item">
-                    <strong>City:</strong> <span>{selectedAd.city}</span>
+                    <strong>District:</strong>{" "}
+                    <span>{selectedAd.district}</span>
+                  </div>
+                  <div className="detail-item">
+                    <strong>Sub Area:</strong> <span>{selectedAd.area}</span>
                   </div>
                   <div className="detail-item">
                     <strong>Seller:</strong>{" "}
@@ -438,7 +445,7 @@ const ResidenciesList = () => {
                     <span>{selectedAd.landSize}</span>
                   </div>
                   <div className="detail-item">
-                    <strong>Area:</strong> <span>{selectedAd.area}</span>
+                    <strong>Kitchen Area:</strong> <span>{selectedAd.area_sqft}</span>
                   </div>
                   <div className="detail-item">
                     <strong>Floors:</strong> <span>{selectedAd.floors}</span>

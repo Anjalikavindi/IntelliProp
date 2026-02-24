@@ -1,33 +1,36 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import Header from '../../components/Header/Header'
-import Footer from '../../components/Footer/Footer'
-import landsData from '../../utils/landsData' 
-import GetStarted from '../../components/GetStarted/GetStarted'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
+import landsData from "../../utils/landsData";
+import GetStarted from "../../components/GetStarted/GetStarted";
 
-import './Lands.css'
-import { FaHeart } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import "./Lands.css";
+import { FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Lands = () => {
-
-  const [lands, setLands] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [favorites, setFavorites] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [lands, setLands] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
-    verified: '',
-    minPrice: '',
-    maxPrice: '',
-    landSize: ''
-  })
-  const landsPerPage = 10
+    verified: "",
+    minPrice: "",
+    maxPrice: "",
+    landSize: "",
+    district: "",
+    area: "",
+  });
+  const landsPerPage = 10;
 
   // Fetch lands from API
   useEffect(() => {
     const fetchLands = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/ads/published-lands');
+        const response = await axios.get(
+          "http://localhost:5000/api/ads/published-lands",
+        );
         setLands(response.data);
       } catch (error) {
         console.error("Error loading lands:", error);
@@ -40,56 +43,79 @@ const Lands = () => {
 
   const toggleFavorite = (id) => {
     setFavorites((prev) =>
-      prev.includes(id)
-        ? prev.filter((favId) => favId !== id)
-        : [...prev, id]
-    )
-  }
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id],
+    );
+  };
 
   // Apply filters
   const filteredLands = lands.filter((land) => {
-    const matchesVerified = filters.verified === '' || (filters.verified === 'true' ? land.verified : !land.verified)
-    const matchesMinPrice = filters.minPrice === '' || land.price >= Number(filters.minPrice)
-    const matchesMaxPrice = filters.maxPrice === '' || land.price <= Number(filters.maxPrice)
-    const matchesLandSize = filters.landSize === '' || land.size >= Number(filters.landSize)
-    return matchesVerified && matchesMinPrice && matchesMaxPrice && matchesLandSize
-  })
+    const matchesVerified =
+      filters.verified === "" ||
+      (filters.verified === "true" ? land.verified : !land.verified);
+    const matchesMinPrice =
+      filters.minPrice === "" || land.price >= Number(filters.minPrice);
+    const matchesMaxPrice =
+      filters.maxPrice === "" || land.price <= Number(filters.maxPrice);
+    const matchesLandSize =
+      filters.landSize === "" || land.size >= Number(filters.landSize);
+    const matchesDistrict =
+      filters.district === "" ||
+      land.district.toLowerCase().includes(filters.district.toLowerCase());
+    const matchesArea =
+      filters.area === "" ||
+      land.area.toLowerCase().includes(filters.area.toLowerCase());
+
+    return (
+      matchesVerified &&
+      matchesMinPrice &&
+      matchesMaxPrice &&
+      matchesLandSize &&
+      matchesDistrict &&
+      matchesArea
+    );
+  });
 
   // Pagination
-  const indexOfLastLand = currentPage * landsPerPage
-  const indexOfFirstLand = indexOfLastLand - landsPerPage
-  const currentLands = filteredLands.slice(indexOfFirstLand, indexOfLastLand)
-  const totalPages = Math.ceil(filteredLands.length / landsPerPage)
+  const indexOfLastLand = currentPage * landsPerPage;
+  const indexOfFirstLand = indexOfLastLand - landsPerPage;
+  const currentLands = filteredLands.slice(indexOfFirstLand, indexOfLastLand);
+  const totalPages = Math.ceil(filteredLands.length / landsPerPage);
 
   if (loading) return <div className="loader">Loading Lands...</div>;
 
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber)
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleFilterChange = (e) => {
-    const { name, value } = e.target
-    setFilters((prev) => ({ ...prev, [name]: value }))
-    setCurrentPage(1)
-  }
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1);
+  };
 
   const handleResetFilters = () => {
     setFilters({
-      verified: '',
-      minPrice: '',
-      maxPrice: '',
-      landSize: ''
-    })
-    setCurrentPage(1)
-  }
+      verified: "",
+      minPrice: "",
+      maxPrice: "",
+      landSize: "",
+    });
+    setCurrentPage(1);
+  };
 
   return (
     <>
       <Header />
       {/* BREADCRUMB SECTION */}
-      <div className="breadcrumb-section" style={{backgroundImage: `url('/land-bg.jpg')`}}>
+      <div
+        className="breadcrumb-section"
+        style={{ backgroundImage: `url('/land-bg.jpg')` }}
+      >
         <div className="breadcrumb-content">
           <h2>Lands</h2>
           <p>
-            <Link to="/" className="breadcrumb-link">Home</Link> / Lands
+            <Link to="/" className="breadcrumb-link">
+              Home
+            </Link>{" "}
+            / Lands
           </p>
         </div>
       </div>
@@ -139,6 +165,24 @@ const Lands = () => {
                 placeholder="e.g. 6"
               />
 
+              <label>District</label>
+              <input
+                type="text"
+                name="district"
+                value={filters.district}
+                onChange={handleFilterChange}
+                placeholder="e.g. Colombo"
+              />
+
+              <label>Sub Area</label>
+              <input
+                type="text"
+                name="area"
+                value={filters.area}
+                onChange={handleFilterChange}
+                placeholder="e.g. Borella"
+              />
+
               <button className="button reset-btn" onClick={handleResetFilters}>
                 Reset Filters
               </button>
@@ -149,11 +193,11 @@ const Lands = () => {
               {currentLands.length > 0 ? (
                 currentLands.map((land) => (
                   <div key={land.id} className="land-card">
-                    <img 
-                        src={`http://localhost:5000/images/${land.image}`} 
-                        alt={land.title} 
-                        className="land-image" 
-                        onError={(e) => e.target.src = '/default-land.jpg'}
+                    <img
+                      src={`http://localhost:5000/images/${land.image}`}
+                      alt={land.title}
+                      className="land-image"
+                      onError={(e) => (e.target.src = "/default-land.jpg")}
                     />
 
                     <div className="land-details">
@@ -163,7 +207,7 @@ const Lands = () => {
                           className="heart-icon"
                           onClick={() => toggleFavorite(land.id)}
                           style={{
-                            color: favorites.includes(land.id) ? 'red' : '#ccc'
+                            color: favorites.includes(land.id) ? "red" : "#ccc",
                           }}
                         />
                       </div>
@@ -175,13 +219,16 @@ const Lands = () => {
                       )}
 
                       <p className="land-info">
-                        {land.size} Perches &nbsp; | &nbsp; {land.city}
+                        {land.size} Perches &nbsp; | &nbsp; {land.district},{" "}
+                        {land.area}
                       </p>
 
                       <div>
                         <span className="secondaryText price">
-                          <span style={{ color: 'var(--primary)' }}>LKR</span>
-                          <span className="land-price">{Number(land.price).toLocaleString()}</span>
+                          <span style={{ color: "var(--primary)" }}>LKR</span>
+                          <span className="land-price">
+                            {Number(land.price).toLocaleString()}
+                          </span>
                           <small> /perch</small>
                         </span>
                       </div>
@@ -190,7 +237,9 @@ const Lands = () => {
                         <Link to={`/landdetails/${land.id}`}>
                           <button className="button-2">Find Out More</button>
                         </Link>
-                        <p className="land-time">⏰ {new Date(land.published).toLocaleDateString()}</p>
+                        <p className="land-time">
+                          ⏰ {new Date(land.published).toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -206,7 +255,7 @@ const Lands = () => {
                     <button
                       key={idx + 1}
                       onClick={() => handlePageChange(idx + 1)}
-                      className={currentPage === idx + 1 ? 'active-page' : ''}
+                      className={currentPage === idx + 1 ? "active-page" : ""}
                     >
                       {idx + 1}
                     </button>
@@ -222,7 +271,7 @@ const Lands = () => {
       </div>
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default Lands
+export default Lands;

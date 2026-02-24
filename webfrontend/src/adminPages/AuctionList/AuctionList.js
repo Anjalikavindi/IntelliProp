@@ -17,7 +17,7 @@ const AuctionList = () => {
         "http://localhost:5000/api/admin/ads/auctions",
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       setAuctionAds(response.data);
     } catch (err) {
@@ -48,7 +48,7 @@ const AuctionList = () => {
           `http://localhost:5000/api/admin/ads/auctions/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         setAuctionAds((prev) => prev.filter((ad) => ad.id !== id));
         Swal.fire("Deleted!", "Auction has been removed.", "success");
@@ -63,7 +63,7 @@ const AuctionList = () => {
       Swal.fire(
         "Not Available",
         "This bidder has no contact number or no bids placed.",
-        "info"
+        "info",
       );
       return;
     }
@@ -71,11 +71,12 @@ const AuctionList = () => {
     window.location.href = `tel:${bidderMobile}`;
   };
 
-  // Filter ads based on search term (ad title or city)
+  // Filter ads based on search term (ad title or Location)
   const filteredAds = auctionAds.filter(
     (ad) =>
       ad.adTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ad.city.toLowerCase().includes(searchTerm.toLowerCase())
+      ad.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (ad.area && ad.area.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   if (loading) return <div className="loader">Loading Auctions...</div>;
@@ -89,7 +90,7 @@ const AuctionList = () => {
         <div className="list-actions-bar">
           <input
             type="text"
-            placeholder="Search by Ad Title or City..."
+            placeholder="Search by Ad Title or Location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="list-search-input"
@@ -103,7 +104,7 @@ const AuctionList = () => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Ad Title & City</th>
+                <th>Ad Title & Location</th>
                 <th>Starting Price</th>
                 <th>Highest Bid</th>
                 <th>Highest Bidder</th>
@@ -118,10 +119,15 @@ const AuctionList = () => {
                 filteredAds.map((ad) => (
                   <tr key={ad.id}>
                     <td data-label="ID">{ad.id}</td>
-                    <td data-label="Ad Title & City" className="td-title-city">
+                    <td
+                      data-label="Ad Title & Location"
+                      className="td-title-city"
+                    >
                       <div className="title-city-group">
                         <span className="ad-title">{ad.adTitle}</span>
-                        <span className="ad-city">{ad.city}</span>
+                        <span className="ad-city">
+                          {ad.district}, {ad.area}
+                        </span>
                       </div>
                     </td>
                     <td data-label="Starting Price" className="td-price-start">
@@ -163,7 +169,9 @@ const AuctionList = () => {
                       <button
                         className="action-btn call-btn" // Changed class
                         title={`Call ${ad.highestBidder}`}
-                        onClick={() => handleCall(ad.bidderMobile, ad.highestBidder)}
+                        onClick={() =>
+                          handleCall(ad.bidderMobile, ad.highestBidder)
+                        }
                       >
                         <FaPhone />
                       </button>

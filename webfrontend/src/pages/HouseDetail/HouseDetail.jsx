@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Header from "../../components/Header/Header";
 import GetStarted from "../../components/GetStarted/GetStarted";
 import Footer from "../../components/Footer/Footer";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import "swiper/css";
 import data from "../../utils/slider.json";
@@ -17,16 +18,49 @@ import {
 import "./HouseDetail.css";
 
 const HouseDetail = () => {
-  
+  const { id } = useParams();
+  const [house, setHouse] = useState(null);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [showNumber, setShowNumber] = useState(false);
+
   // Track favorite status for each card
   const [favorites, setFavorites] = useState([]);
 
   // Toggle heart color on click
   const toggleFavorite = (index) => {
     setFavorites((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
+
+  useEffect(() => {
+    const fetchHouse = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/ads/published-houses/${id}`,
+        );
+        setHouse(res.data);
+        setSelectedImage(res.data.images[0]);
+      } catch (err) {
+        console.error("Error fetching house:", err);
+      }
+    };
+
+    fetchHouse();
+  }, [id]);
+
+  const formattedNumber = house?.mobile
+    ? house.mobile.startsWith("0")
+      ? `+94 ${house.mobile.substring(1)}`
+      : `+94 ${house.mobile}`
+    : "";
+
+  // Mask last 9 digits
+  const maskedNumber = formattedNumber
+    ? formattedNumber.substring(0, formattedNumber.length - 9) + "xxxxxxxxx"
+    : "";
+
+  if (!house) return <div>Loading...</div>;
 
   return (
     <>
@@ -38,7 +72,7 @@ const HouseDetail = () => {
         style={{ backgroundImage: `url('/residencies-bg.jpg')` }}
       >
         <div className="breadcrumb-content">
-          <h2>House for Sale in Kandy</h2>
+          <h2>{house.title}</h2>
           <p>
             <Link to="/" className="breadcrumb-link">
               Home
@@ -47,7 +81,7 @@ const HouseDetail = () => {
             <Link to="/residencies" className="breadcrumb-link">
               Residencies
             </Link>{" "}
-            / House for Sale in Kandy
+            / {house.title}
           </p>
         </div>
       </div>
@@ -59,18 +93,21 @@ const HouseDetail = () => {
           <div className="left-section">
             {/* Main Image */}
             <div className="main-image">
-              <img src="/r1.png" alt="House" />
+              <img src={selectedImage} alt="House" />
               <span className="image-count">1/6</span>
             </div>
 
             {/* Thumbnail Images */}
             <div className="thumbnail-row">
-              <img src="/r2.png" alt="" />
-              <img src="/r3.png" alt="" />
-              <img src="/r1.png" alt="" />
-              <img src="/r2.png" alt="" />
-              <img src="/r3.png" alt="" />
-              <img src="/r1.png" alt="" />
+              {house.images.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt=""
+                  onClick={() => setSelectedImage(img)}
+                  style={{ cursor: "pointer" }}
+                />
+              ))}
             </div>
 
             {/* Core Information */}
@@ -83,7 +120,7 @@ const HouseDetail = () => {
                     <img src="/icons/price-tag.png" alt="Type Icon" />
                     <p className="label">Type</p>
                   </div>
-                  <p className="value">Sale</p>
+                  <p className="value">{house.ad_type}</p>
                 </div>
 
                 <div className="info-item">
@@ -91,15 +128,15 @@ const HouseDetail = () => {
                     <img src="/icons/land.png" alt="Land Icon" />
                     <p className="label">Land Size</p>
                   </div>
-                  <p className="value">10 Perches</p>
+                  <p className="value">{house.land_size} Perches</p>
                 </div>
 
                 <div className="info-item">
                   <div className="info-label">
                     <img src="/icons/size.png" alt="Area Icon" />
-                    <p className="label">Area (sqft)</p>
+                    <p className="label">Kitchen Area (sqft)</p>
                   </div>
-                  <p className="value">0000</p>
+                  <p className="value">{house.area_sqft}</p>
                 </div>
 
                 <div className="info-item">
@@ -107,7 +144,7 @@ const HouseDetail = () => {
                     <img src="/icons/bedroom.png" alt="Bedrooms Icon" />
                     <p className="label">Bedrooms</p>
                   </div>
-                  <p className="value">3</p>
+                  <p className="value">{house.bedrooms}</p>
                 </div>
 
                 <div className="info-item">
@@ -115,7 +152,7 @@ const HouseDetail = () => {
                     <img src="/icons/bath.png" alt="Bathrooms Icon" />
                     <p className="label">Bathrooms</p>
                   </div>
-                  <p className="value">3</p>
+                  <p className="value">{house.bathrooms}</p>
                 </div>
               </div>
             </div>
@@ -124,25 +161,7 @@ const HouseDetail = () => {
             <div className="description-box">
               <details>
                 <summary>Description Overview</summary>
-                <p>
-                  Luxury house available for sale in Kandy, Peradeniya.
-                  <br />
-                  10 perch
-                  <br />3 bedroom and 3 bathroom
-                  <br />
-                  Kitchen with pantry
-                  <br />
-                  Living and dining area
-                  <br />
-                  Rooms and balconies
-                  <br />
-                  Large rooftop
-                  <br />5 km to Peradeniya
-                  <br />
-                  45 million
-                  <br />
-                  0775526690
-                </p>
+                <p>{house.description}</p>
               </details>
             </div>
 
@@ -162,31 +181,49 @@ const HouseDetail = () => {
             {/* PRICE CARD */}
             <div className="price-card">
               <h2 className="price-main">
-                Rs: 2,500,000
+                Rs: {Number(house.price).toLocaleString()}
               </h2>
-              <p className="negotiable">Negotiable</p>
+              {house.negotiable && <p className="negotiable">Negotiable</p>}
 
               <div className="detail-box">
                 <div className="detail-row">
                   <span>Category</span> <strong>House</strong>
                 </div>
                 <div className="detail-row">
-                  <span>Type</span> <strong>Sale</strong>
+                  <span>Type</span> <strong>{house.ad_type}</strong>
                 </div>
                 <div className="detail-row">
-                  <span>Area (square feet)</span> <strong>544.5</strong>
+                  <span>Kitchen Area (square feet)</span>{" "}
+                  <strong>{house.area_sqft}</strong>
                 </div>
-                <p className="ref">Ref: W2776032510130654541321</p>
+                <p className="ref">
+                  <strong>Posted:</strong>{" "}
+                  {new Date(house.created_at).toLocaleDateString()}
+                </p>
               </div>
             </div>
 
             {/* CONTACT CARD */}
             <div className="contact-card">
-              <p className="masked-number">+94 7xxxxxxxx</p>
-              <p className="reveal-text">Click to reveal</p>
+              <p
+                className="masked-number"
+                onClick={() => setShowNumber(true)}
+                style={{ cursor: "pointer" }}
+              >
+                {showNumber ? formattedNumber : maskedNumber}
+              </p>
+
+              {!showNumber && <p className="reveal-text">Click to reveal</p>}
 
               <div className="contact-buttons">
-                <button className="whatsapp-btn">Chat on Whatsapp</button>
+                <button
+                  className="whatsapp-btn"
+                  onClick={() =>
+                    window.open(`https://wa.me/${house.mobile}`)
+                  }
+                >
+                  Chat on Whatsapp
+                </button>
                 <button className="owner-btn">Chat with Owner</button>
               </div>
             </div>
@@ -247,10 +284,10 @@ const HouseDetail = () => {
       <GetStarted />
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default HouseDetail
+export default HouseDetail;
 
 const SlideNextButton = () => {
   const swiper = useSwiper();

@@ -81,7 +81,7 @@ function App() {
               </ProtectedVerifiedRoute>
             }
           />
-          <Route path="/housedetails" element={<HouseDetail />} />
+          <Route path="/housedetails/:id" element={<HouseDetail />} />
           <Route path="/landdetails/:id" element={<LandDetails />} />
 
           {/* ------------------------- ADMIN PANEL ------------------------- */}

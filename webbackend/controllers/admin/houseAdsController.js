@@ -13,7 +13,8 @@ export const getHouseAdsList = async (req, res) => {
             a.ad_id,                         
             hd.house_id AS id,
             a.title,
-            a.city,
+            a.district,
+            a.area,
             a.description,
             a.created_at AS createdAt,
             a.publish_status AS publishedStatus,
@@ -21,7 +22,7 @@ export const getHouseAdsList = async (req, res) => {
             u.email AS sellerEmail,
             u.mobile AS sellerMobile,
             hd.land_size AS landSize,
-            hd.area_sqft AS area,
+            hd.area_sqft AS area_sqft,
             hd.floors,
             hd.bedrooms,
             hd.bathrooms,
@@ -94,7 +95,7 @@ export const getHouseAdsList = async (req, res) => {
       // Parse numeric fields for safe formatting
       const parsedLandSize =
         ad.landSize !== null ? parseFloat(ad.landSize) : null;
-      const parsedArea = ad.area !== null ? parseFloat(ad.area) : null;
+      const parsedAreaSqft = ad.area_sqft !== null ? parseFloat(ad.area_sqft) : null;
       const parsedPrice = ad.price !== null ? parseFloat(ad.price) : null;
 
       return {
@@ -103,7 +104,8 @@ export const getHouseAdsList = async (req, res) => {
         thumbnail: thumbnailPath,
         images: images,
         title: ad.title,
-        city: ad.city,
+        district: ad.district,
+        area: ad.area,
         description: ad.description,
         sellerName: ad.sellerName,
         sellerEmail: ad.sellerEmail,
@@ -112,7 +114,7 @@ export const getHouseAdsList = async (req, res) => {
         landSize: `${
           parsedLandSize !== null ? parsedLandSize.toFixed(2) : "N/A"
         } Perches`,
-        area: `${parsedArea !== null ? parsedArea : "N/A"} sqft`,
+        area_sqft: `${parsedAreaSqft !== null ? parsedAreaSqft : "N/A"} sqft`,
         floors: ad.floors,
         bedrooms: ad.bedrooms,
         bathrooms: ad.bathrooms,
