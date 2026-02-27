@@ -23,6 +23,8 @@ const HouseDetail = () => {
   const [selectedImage, setSelectedImage] = useState("");
   const [showNumber, setShowNumber] = useState(false);
 
+  const [recommendations, setRecommendations] = useState([]);
+
   // Track favorite status for each card
   const [favorites, setFavorites] = useState([]);
 
@@ -47,6 +49,20 @@ const HouseDetail = () => {
     };
 
     fetchHouse();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/predict/recommendations/${id}`,
+        );
+        setRecommendations(res.data);
+      } catch (err) {
+        console.error("Error fetching recommendations", err);
+      }
+    };
+    fetchRecommendations();
   }, [id]);
 
   const formattedNumber = house?.mobile
@@ -218,9 +234,7 @@ const HouseDetail = () => {
               <div className="contact-buttons">
                 <button
                   className="whatsapp-btn"
-                  onClick={() =>
-                    window.open(`https://wa.me/${house.mobile}`)
-                  }
+                  onClick={() => window.open(`https://wa.me/${house.mobile}`)}
                 >
                   Chat on Whatsapp
                 </button>
@@ -253,31 +267,26 @@ const HouseDetail = () => {
             <SlideNextButton />
 
             {/* slider */}
-            {data.map((card, i) => (
-              <SwiperSlide key={i}>
-                <div className="flexColStart r-card card-bg">
-                  <img src={card.image} alt="home" />
-
-                  {/* Price + Heart Icon */}
-                  <div className="r-top-row">
-                    <span className="secondaryText r-price">
-                      <span style={{ color: "var(--primary)" }}>$</span>
-                      <span>{card.price}</span>
-                    </span>
-
-                    <FaHeart
-                      className={`heart-icon ${
-                        favorites.includes(i) ? "active" : ""
-                      }`}
-                      onClick={() => toggleFavorite(i)}
-                    />
-                  </div>
-
-                  <span className="primaryText">{card.name}</span>
-                  <span className="secondaryText">{card.detail}</span>
-                </div>
-              </SwiperSlide>
-            ))}
+            {recommendations.length > 0 ? (
+              recommendations.map((card, i) => (
+                <SwiperSlide key={card.ad_id}>
+                  <Link to={`/published-houses/${card.ad_id}`}>
+                    <div className="flexColStart r-card card-bg">
+                      <img src={card.image || "/placeholder.jpg"} alt="home" />
+                      <div className="r-top-row">
+                        <span className="secondaryText r-price">
+                          <span style={{ color: "var(--primary)" }}>Rs. </span>
+                          <span>{Number(card.price).toLocaleString()}</span>
+                        </span>
+                      </div>
+                      <span className="primaryText">{card.title}</span>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              ))
+            ) : (
+              <p>Loading recommendations...</p>
+            )}
           </Swiper>
         </div>
       </div>

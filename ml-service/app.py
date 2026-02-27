@@ -8,13 +8,20 @@ import joblib
 app = Flask(__name__)
 CORS(app)
 
-# Load model & feature list
+# Load prediction model & feature list
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 model = joblib.load(os.path.join(MODEL_DIR, "final_house_price_model.pkl"))
 model_features = joblib.load(os.path.join(MODEL_DIR, "model_features.pkl"))
 metadata = joblib.load(os.path.join(MODEL_DIR, "model_metadata.pkl"))
+
+# Load recommendation model & feature list
+REC_MODEL_PATH = os.path.join(MODEL_DIR, "knn_recommender.pkl")
+REC_PREPROCESSOR_PATH = os.path.join(MODEL_DIR, "recommendation_preprocessor.pkl")
+
+rec_model = joblib.load(REC_MODEL_PATH)
+rec_preprocessor = joblib.load(REC_PREPROCESSOR_PATH)
 
 CURRENT_YEAR = 2026
 
@@ -116,6 +123,70 @@ def predict():
             "error": str(e)
         }), 500
 
+
+@app.route("/recommend", methods=["POST"])
+def recommend():
+    try:
+        json_data = request.json
+        target_ad_id = json_data.get("target_id")
+        all_ads = json_data.get("all_ads")
+
+        if not all_ads or len(all_ads) < 2:
+            return jsonify({"success": True, "recommended_ad_ids": []})
+
+        # 1. Prepare DataFrame from MySQL ads
+        df_all = pd.DataFrame(all_ads)
+        df_all = df_all.fillna(0) 
+
+        # 2. Map columns to match training feature set
+        mapping = {
+            'land_size': 'perch',
+            'area_sqft': 'kitchen_area_sqft',
+            'price': 'price_lkr',
+            'electricity_type': 'electricity'
+        }
+        df_all = df_all.rename(columns=mapping)
+        df_all['property_age'] = 2026 - df_all['year_built'].astype(int)
+
+        # 3. Transform ALL active ads into the 109-feature space
+        # We use the LOADED preprocessor to ensure scaling/encoding is identical to training
+        X_active = rec_preprocessor.transform(df_all)
+
+        # 4. Create a TEMPORARY KNN model just for these active ads
+        # This prevents the "Out of Bounds" index error
+        from sklearn.neighbors import NearestNeighbors
+        temp_knn = NearestNeighbors(n_neighbors=min(len(df_all), 6), metric='cosine')
+        temp_knn.fit(X_active)
+
+        # 5. Find the index of the target house in the CURRENT df_all
+        target_idx_list = df_all.index[df_all['ad_id'] == int(target_ad_id)].tolist()
+        if not target_idx_list:
+             return jsonify({"success": True, "recommended_ad_ids": []})
+        
+        target_idx = target_idx_list[0]
+
+        # 6. Find neighbors among the active ads
+        distances, indices = temp_knn.kneighbors([X_active[target_idx]])
+
+        # 7. Extract IDs
+        indices_list = indices.flatten().tolist()
+        if target_idx in indices_list:
+            indices_list.remove(target_idx)
+
+        # Now iloc will work because indices match the length of df_all
+        recommended_ids = df_all.iloc[indices_list]['ad_id'].tolist()
+
+        return jsonify({
+            "success": True, 
+            "recommended_ad_ids": [int(i) for i in recommended_ids]
+        })
+
+    except Exception as e:
+        print(f"CRITICAL ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+    
 
 if __name__ == "__main__":
     app.run(port=8000)
