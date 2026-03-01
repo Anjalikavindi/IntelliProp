@@ -1,87 +1,49 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./ChatBot.css";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const ChatBot = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: "Hi! How can I help you with IntelliProp today?", sender: "bot" },
-  ]);
+const Chatbot = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async () => {
+    if (!input.trim()) return;
 
-    const userMsg = { text: input, sender: "user" };
-    // Update UI immediately with user's message
-    setMessages((prev) => [...prev, userMsg]);
-    const currentInput = input;
-    setInput("");
-    setIsLoading(true);
+    const newMessages = [...messages, { role: 'user', text: input }];
+    setMessages(newMessages);
+    setInput('');
+    setLoading(true);
 
     try {
-      // Double check your Flask port. Is it 8000 or 5000?
-      // Based on your previous logs, ML-service is on 8000.
-      const res = await axios.post("http://127.0.0.1:8000/api/chat", {
-        message: currentInput,
-      });
-
-      if (res.data.reply) {
-        setMessages((prev) => [
-          ...prev,
-          { text: res.data.reply, sender: "bot" },
-        ]);
-      }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: "The IntelliProp service is currently offline. Please try again later.",
-          sender: "bot",
-        },
-      ]);
+      const { data } = await axios.post('http://localhost:5000/api/chat', { prompt: input });
+      setMessages([...newMessages, { role: 'bot', text: data.reply }]);
+    } catch (error) {
+      setMessages([...newMessages, { role: 'bot', text: "Error connecting to AI." }]);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="chatbot-container">
-      {isOpen && (
-        <div className="chat-window">
-          <div className="chat-header">IntelliProp Assistant</div>
-          <div className="chat-messages">
-            {messages.map((m, i) => (
-              <div key={i} className={`message ${m.sender}`}>
-                {m.text}
-              </div>
-            ))}
-            {isLoading && <div className="message bot typing">Thinking...</div>}
+    <div style={{ border: '1px solid #ccc', padding: '10px', width: '300px', position: 'fixed', bottom: '20px', right: '20px', background: '#fff' }}>
+      <div style={{ height: '300px', overflowY: 'scroll', marginBottom: '10px' }}>
+        {messages.map((msg, i) => (
+          <div key={i} style={{ textAlign: msg.role === 'user' ? 'right' : 'left', margin: '5px' }}>
+            <strong>{msg.role === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
           </div>
-          <div className="chat-input">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything..."
-            />
-            <button onClick={sendMessage}>Send</button>
-          </div>
-        </div>
-      )}
-      <button className="chat-toggle" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? (
-          <span className="close-icon">×</span>
-        ) : (
-          <img
-            src="/message.png" /* Ensure this matches your actual logo filename in /public */
-            alt="IntelliProp Logo"
-            className="chatbot-logo-img"
-          />
-        )}
-      </button>
+        ))}
+        {loading && <p>Thinking...</p>}
+      </div>
+      <input 
+        value={input} 
+        onChange={(e) => setInput(e.target.value)} 
+        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+        placeholder="Ask about properties..." 
+        style={{ width: '80%' }}
+      />
+      <button onClick={handleSend}>Send</button>
     </div>
   );
 };
 
-export default ChatBot;
+export default Chatbot;
