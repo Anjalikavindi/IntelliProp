@@ -1,9 +1,12 @@
 import os
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
 import joblib
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +25,7 @@ REC_PREPROCESSOR_PATH = os.path.join(MODEL_DIR, "recommendation_preprocessor.pkl
 
 rec_model = joblib.load(REC_MODEL_PATH)
 rec_preprocessor = joblib.load(REC_PREPROCESSOR_PATH)
+
 
 CURRENT_YEAR = 2026
 
@@ -186,6 +190,7 @@ def recommend():
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
+    
     
 
 if __name__ == "__main__":

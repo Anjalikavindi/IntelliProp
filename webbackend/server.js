@@ -12,6 +12,7 @@ import adminUserRoutes from "./routes/admin/UserRoutes.js";
 import districtRoutes from "./routes/website/districtRoutes.js";
 import areaRoutes from "./routes/website/areaRoutes.js";
 import predictionRoutes from "./routes/website/predictionRoutes.js";
+import chatRoutes from "./routes/website/chat.js";
 
 dotenv.config();
 
@@ -43,6 +44,9 @@ app.use("/api/districts", districtRoutes);
 app.use("/api/areas", areaRoutes);
 //House Price Prediction
 app.use("/api/predict", predictionRoutes);
+
+//Chatbot
+app.use("/api/chatbot", chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

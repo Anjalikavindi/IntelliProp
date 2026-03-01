@@ -1,6 +1,6 @@
 import "./App.css";
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Houses from "./pages/Houses/Houses";
 import Lands from "./pages/Lands/Lands";
 import ContactUs from "./pages/Contact/ContactUs";
@@ -13,6 +13,7 @@ import AdDetails from "./pages/PostAds/AdDetails";
 import Verify from "./pages/Verify/Verify";
 import Profile from "./pages/Profile/Profile";
 import ProtectedVerifiedRoute from "./pages/ProtectedVerifiedRoute/ProtectedVerifiedRoute";
+import Chatbot from "./pages/Chatbot/Chatbot";
 
 //Admin Panel
 import AdminLogin from "./adminPages/AdminLogin/AdminLogin";
@@ -28,8 +29,21 @@ import UsersList from "./adminPages/UsersList/UsersList";
 import AdminProfile from "./adminPages/AdminProfile/AdminProfile";
 import AdminRegister from "./adminPages/AdminRegister/AdminRegister";
 import ManageEmployees from "./adminPages/ManageEmployees/ManageEmployees";
-
 import SessionManager from "./adminComponents/SessionManager/SessionManager";
+
+const UserLayout = ({ children }) => {
+  const location = useLocation();
+  // Check if the current path starts with /admin
+  const isAdminPath = location.pathname.startsWith("/admin");
+
+  return (
+    <>
+      {children}
+      {/* Render Chatbot ONLY if NOT on an admin path */}
+      {!isAdminPath && <Chatbot />}
+    </>
+  );
+};
 
 // Helper component to wrap all Admin Panel pages with the fixed layout
 const AdminLayout = ({ open, setOpen }) => (
@@ -63,6 +77,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <UserLayout>
         <Routes>
           {/* Residencies Page */}
           <Route path="/" element={<Home />} />
@@ -106,6 +121,7 @@ function App() {
             <Route path="manage-admins" element={<ManageEmployees/>}/>
           </Route>
         </Routes>
+        </UserLayout>
       </div>
     </Router>
   );
