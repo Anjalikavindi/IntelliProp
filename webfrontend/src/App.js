@@ -13,7 +13,8 @@ import AdDetails from "./pages/PostAds/AdDetails";
 import Verify from "./pages/Verify/Verify";
 import Profile from "./pages/Profile/Profile";
 import ProtectedVerifiedRoute from "./pages/ProtectedVerifiedRoute/ProtectedVerifiedRoute";
-import Chatbot from "./pages/Chatbot/Chatbot";
+// import chatbot from "./pages/Chatbot/Chatbot";
+import Chatbot from "./pages/AIChatbot/Chatbot";
 
 //Admin Panel
 import AdminLogin from "./adminPages/AdminLogin/AdminLogin";

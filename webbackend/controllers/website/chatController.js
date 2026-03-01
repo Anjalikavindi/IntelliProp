@@ -9,19 +9,32 @@ export const getChatResponse = async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    // Initialize the model with a system instruction for IntelliProp
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      systemInstruction: "You are the IntelliProp AI Assistant. You help users with property valuations, real estate trends in Sri Lanka, and navigating the bidding system. Be professional, concise, and do not provide legal or financial advice."
-    });
+    // UPDATE: Use gemini-2.5-flash (the stable 2026 standard)
+    // If this still 404s, your API key might only have access to "gemini-pro"
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
+    const systemInstruction = "You are the IntelliProp AI Assistant. You help users with property valuations and real estate in Sri Lanka. Be professional and concise.";
+    const finalPrompt = `${systemInstruction}\n\nUser: ${prompt}`;
+
+    const result = await model.generateContent(finalPrompt);
+    const response = result.response;
     const text = response.text();
 
     res.status(200).json({ reply: text });
   } catch (error) {
-    console.error("Gemini Error:", error);
-    res.status(500).json({ error: "Failed to fetch AI response from Gemini" });
+    console.error("Gemini Error Details:", error);
+
+    // Automatic Fallback to the most basic stable model if 2.5 is not found
+    if (error.status === 404) {
+      console.log("Model 2.5 not found, falling back to basic gemini-pro...");
+      try {
+        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await fallbackModel.generateContent(prompt);
+        return res.status(200).json({ reply: result.response.text() });
+      } catch (fallbackError) {
+        return res.status(500).json({ error: "AI service currently unavailable in this region." });
+      }
+    }
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
