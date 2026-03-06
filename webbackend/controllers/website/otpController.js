@@ -26,8 +26,10 @@ export const sendOTP = (req, res) => {
     },
   });
 
+  const senderName = "IntelliProp";
+
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"${senderName}" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Your OTP Code",
     text: `Your OTP code is ${otp}. It will expire in 5 minutes.`,

@@ -13,6 +13,7 @@ import districtRoutes from "./routes/website/districtRoutes.js";
 import areaRoutes from "./routes/website/areaRoutes.js";
 import predictionRoutes from "./routes/website/predictionRoutes.js";
 import chatRoutes from "./routes/website/chatRoutes.js";
+import startAuctionCron from "./services/auctionCron.js";
 
 dotenv.config();
 
@@ -49,4 +50,10 @@ app.use("/api/predict", predictionRoutes);
 app.use("/api/chat", chatRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  
+  // Initialize the Cron Job
+  startAuctionCron(); 
+  console.log("Auction Cron Job Initialized.");
+});
