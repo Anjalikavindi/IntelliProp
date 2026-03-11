@@ -35,6 +35,12 @@ const HouseDetail = () => {
     );
   };
 
+  // Auto-scroll to top when ID changes (when clicking a recommendation)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setShowNumber(false); // Reset phone number visibility for new property
+  }, [id]);
+
   useEffect(() => {
     const fetchHouse = async () => {
       try {
@@ -270,7 +276,7 @@ const HouseDetail = () => {
             {recommendations.length > 0 ? (
               recommendations.map((card, i) => (
                 <SwiperSlide key={card.ad_id}>
-                  <Link to={`/published-houses/${card.ad_id}`}>
+                  <Link to={`/housedetails/${card.ad_id}`}>
                     <div className="flexColStart r-card card-bg">
                       <img src={card.image || "/placeholder.jpg"} alt="home" />
                       <div className="r-top-row">

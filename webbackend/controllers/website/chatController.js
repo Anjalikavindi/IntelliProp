@@ -9,8 +9,6 @@ export const getChatResponse = async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    // UPDATE: Use gemini-2.5-flash (the stable 2026 standard)
-    // If this still 404s, your API key might only have access to "gemini-pro"
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const systemInstruction = "You are the IntelliProp AI Assistant. You help users with property valuations and real estate in Sri Lanka. Be professional and concise.";

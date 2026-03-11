@@ -1,10 +1,8 @@
 import nodemailer from "nodemailer";
 import db from "../../config/db.js";
 
-// For simplicity, store OTPs in memory (for production, use DB or cache)
 const otpStore = new Map();
 
-// Generate 6-digit OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
 
 export const sendOTP = (req, res) => {
@@ -17,9 +15,8 @@ export const sendOTP = (req, res) => {
   const otp = generateOTP();
   otpStore.set(email, otp);
 
-  // Configure Nodemailer
   const transporter = nodemailer.createTransport({
-    service: "gmail", // or another service
+    service: "gmail", 
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
